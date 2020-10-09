@@ -77,27 +77,40 @@ the script `pca_fig3.R`. This script generates the files contained in
 `r system.file("extdata", "pcadata", package = pkgname)`, which are used below to 
 generate the main plots.
 
-```{r}
+```{r, eval = TRUE}
 script.name <- "figS6.R"
 source(file.path(scripts.dir, script.name))
 figS6a
 ```
-```{r}
+```{r, eval = TRUE}
 figS6b
 ```
 
 # Figure S7
 
-```{r}
+This section shows how to generate the data summary plots for DNAm variability analyses in 7
+noncancer tissues. Source the script to generate the barplots summarizing studies and samples (fig7b) and 
+the anova filter summary stacked barplot.
+
+```{r, eval = TRUE}
 script.name <- "figS7.R"
 source(file.path(scripts.dir, script.name))
-figS7
+figS7b.studies
+```
+```{r, eval = TRUE}
+figS7b.samples
+```
+```{r, eval = TRUE}
+figS7c
 ```
 
 # Figure S8
 
-```{r}
+This section shows how to generate a composite of stacked barplots summarizing
+genome mapping patterns in probes with low variance across 7 noncancer tissues.
+
+```{r, eval = TRUE}
 script.name <- "figS8.R"
 source(file.path(scripts.dir, script.name))
-figS8
+grid.arrange(figS8.plot1, figS8.plot2, figS8.plot3, ncol = 3)
 ```
