@@ -8,7 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 library(recountmethylationManuscriptSupplement)
 pkgname <- "recountmethylationManuscriptSupplement"
-scripts.dir <- system.file("scripts", package = pkgname)
+scripts.dir <- system.file("scripts", "figures", 
+                           package = pkgname)
 
 library(ggplot2)
 library(gridExtra)
@@ -40,7 +41,12 @@ figS1
 
 # Figure S2
 
-```{r}
+This section shows how to generate stacked barplots of minimum confidences and
+most likely sample type predictions from running MetaSRA-pipeline on GEO samples.
+The data is extracted from the main metadata table `table-s1_mdpost_all-gsm-md.csv` 
+(Table S1).
+
+```{r, eval = TRUE}
 script.name <- "figS2.R"
 source(file.path(scripts.dir, script.name))
 figS2
@@ -48,15 +54,21 @@ figS2
 
 # Figure S3
 
-```{r}
+Source the script. This load BeadArray control signals across all samples, filters 
+on controls of interest, and makes a composite plots of signal distributions with 
+vertical blue lines showing the minimum threshold for a sample to "pass" the control.
+Thresholds are based on Illumina's documentation and the `ewastools` package (Methods).
+Metrics with "trimmed" in the title have had extreme outlying samples with very high
+signal removed before plotting.
+
+```{r, eval = TRUE}
 script.name <- "figS3.R"
 source(file.path(scripts.dir, script.name))
-figS3
 ```
 
 # Figure S4
 
-```{r}
+```{r, eval = TRUE}
 script.name <- "figS4.R"
 source(file.path(scripts.dir, script.name))
 figS4
@@ -64,10 +76,9 @@ figS4
 
 # Figure S5
 
-```{r}
+```{r, eval = TRUE}
 script.name <- "figS5.R"
 source(file.path(scripts.dir, script.name))
-figS5
 ```
 
 # Figure S6

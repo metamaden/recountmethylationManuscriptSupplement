@@ -10,9 +10,10 @@ library(ggplot2)
 # get path info
 pkgname <- "recountmethylationManuscriptSupplement"
 pca.dir <- system.file("extdata", "pcadata", package = pkgname) 
+tables.dir <- system.file("extdata", "tables", package = pkgname) 
 # metadata with new labels
 md.name <- "metadata_pca-labels.rda"
-md <- get(load(file.path(pca.dir, "metadata_pca-labels.rda")))
+md <- get(load(file.path(pca.dir, md.name)))
 
 #--------
 # fig S6a

@@ -3,19 +3,26 @@
 # Make violin plots of high variance probes in 
 # 7 noncancer tissues (fig4a and fig4b).
 
+library(ggplot2)
+
 #----------
 # load data
 #----------
 #txfiltl <- get(load(txfiltl.name))
 #txnames = names(txfiltl)
 pkgname <- "recountmethylationManuscriptSupplement"
-nct7.dir <- system.file("nct7", "pcadata", package = pkgname) 
-fn <- "lfilt_highvar-nc7.rda"
-txfiltl <- get(load(file.path(nct7.dir, fn)))
+nct7.dir <- system.file("extdata", "nct7", package = pkgname) 
+# fn <- "lfilt_highvar-nc7.rda"
+lfn <- "lfilt_cgtables_nct.rda"
+txfiltl <- get(load(file.path(nct7.dir, lfn)))
 
-#-------------
-# violin plots
-#-------------
+ldfn <- "listdat-top1kmvp-tx_abs-bin_7nct.rda"
+txfiltl <- get(load(file.path(nct7.dir, ldfn)))
+txnames <- names(txfiltl)
+
+#-----------------------
+# prep the plot datasets
+#-----------------------
 bpdf.mean = matrix(nrow = 0, ncol = 3)
 bpdf.var = matrix(nrow = 0, ncol = 3)
 
@@ -23,33 +30,38 @@ bpdf.var = matrix(nrow = 0, ncol = 3)
 tl = c("blood", "buccal", "brain", "sperm", "nasal", "adipose", "liver" ) # index
 tc = c("red", "orange", "purple", "blue", "green", "brown", "forestgreen") # color
 
+# get summaries by tissue
 for(t in 1:length(txnames)){
   tx = txnames[t]; datt = txfiltl[[tx]]
   bpdf.mean = rbind(bpdf.mean, data.frame(datt$mean, tc[tl == tx], tx, stringsAsFactors = F))
   bpdf.var = rbind(bpdf.var, data.frame(datt$var, tc[tl == tx], tx, stringsAsFactors = F))
 }
+
+# format plot data
 bpdf.mean = as.data.frame(bpdf.mean, stringsAsFactors = F)
 bpdf.var = as.data.frame(bpdf.var, stringsAsFactors = F)
 bpdf.mean[,1] = as.numeric(as.character(bpdf.mean[,1]))
 bpdf.var[,1] = as.numeric(as.character(bpdf.var[,1]))
 colnames(bpdf.mean) = c("mean", "col", "tissue")
 colnames(bpdf.var) = c("var", "col", "tissue")
-
 bpdf.mean$tissue = factor(bpdf.mean$tissue, levels = unique(bpdf.mean$tissue))
 ordert = order(match(tl, levels(bpdf.mean$tissue)))
+bpdf.var$tissue = factor(bpdf.var$tissue, levels = unique(bpdf.var$tissue))
+ordert = order(match(tl, levels(bpdf.var$tissue)))
 
-# version 2 (separate plots)
-p1 = ggplot(bpdf.mean, aes(x = tissue, y = mean, fill = tissue)) + 
+#-------------------
+# make plot objects
+#-------------------
+# means violin plots
+fig4a <- ggplot(bpdf.mean, aes(x = tissue, y = mean, fill = tissue)) + 
   geom_violin(trim = F, show.legend = F) +
   scale_fill_manual(values = tc[ordert]) + theme_bw() + 
   theme(axis.text.x = element_text(angle = 90)) +
   xlab("Tissue") + ylab("Mean") +
   scale_y_continuous(limits = c(0, 1.2), breaks = seq(0, 1, 0.5))
 
-bpdf.var$tissue = factor(bpdf.var$tissue, levels = unique(bpdf.var$tissue))
-ordert = order(match(tl, levels(bpdf.var$tissue)))
-
-p2 = ggplot(bpdf.var, aes(x = tissue, y = var, fill = tissue)) + 
+# variances violin plots
+fig4b <- ggplot(bpdf.var, aes(x = tissue, y = var, fill = tissue)) + 
   geom_violin(trim = F, show.legend = F) +
   scale_fill_manual(values = tc[ordert]) + theme_bw() + 
   theme(axis.text.x = element_text(angle = 90)) + 

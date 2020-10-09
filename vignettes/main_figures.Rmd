@@ -8,7 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 library(recountmethylationManuscriptSupplement)
 pkgname <- "recountmethylationManuscriptSupplement"
-scripts.dir <- system.file("scripts", package = pkgname)
+scripts.dir <- system.file("scripts", "figures", 
+                           package = pkgname)
 
 library(ggplot2)
 library(gridExtra)
@@ -147,18 +148,23 @@ For analysis details, see also the data analyses vignette in [`recountmethylatio
 
 Violin plots of 14,000 high variance probes
 
-```{r}
-script.name <- "fig4a.R"
+```{r, eval = TRUE}
+script.name <- "fig4ab.R"
 source(file.path(scripts.dir, script.name))
 fig4a
+```
+```{r, eval = TRUE}
+fig4b
 ```
 
 ## 4B
 
-Stacked barplots of probe region summaries
+This section shows how to generate the composite image of
+stacked barplots showing probe genome region mappings among the
+14,000 probes with high tissue-specific variances in 7 
+noncancer tissues.
 
-```{r}
-script.name <- "fig4b.R"
+```{r, eval = TRUE}
+script.name <- "fig4c.R"
 source(file.path(scripts.dir, script.name))
-fig4b
 ```
