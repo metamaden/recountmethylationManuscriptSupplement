@@ -1,0 +1,164 @@
+---
+title: "Main Figures"
+author: "Sean Maden"
+date: "10/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(recountmethylationManuscriptSupplement)
+pkgname <- "recountmethylationManuscriptSupplement"
+scripts.dir <- system.file("scripts", package = pkgname)
+
+library(ggplot2)
+library(gridExtra)
+library(data.table)
+
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Figure 1
+
+Some details about the platforms of interest are as follows:
+
+```{r, echo = FALSE, eval = TRUE}
+lid <- list(c('GPL13534','HM450K','2011','May 2011'),
+            c('GPL21145', 'EPIC','2015','Nov. 2015'),
+            c('GPL8490', 'HM27K','2009','Apr. 2009')
+)
+df <- as.data.frame(do.call(rbind, lid))
+colnames(df) <- c("platform_id", "platform_name", 
+                  "release_year", "release_month")
+knitr::kable(df)
+```
+
+## 1A Available GEO samples (GSM IDs) by year, platform, and type
+
+Obtain sample (GSM IDs) and study (GSE IDs) summaries from queries to GEO 
+with queries to Entrez utilities. With 
+[Entrez utilities](https://www.ncbi.nlm.nih.gov/books/NBK179288/) installed, navigate 
+to the directory with the script "eqplot.py" and run:
+
+```
+python3 eqplot.py
+```
+
+This will cause data queries to the GEO servers, and result in the creation 
+of several new files, "gsmyeardata", "gsmidatyrdata", "gseyeardata", and 
+"gseidatyrdata". Finally, run the script "fig1a.R" to make the plot.
+
+```{r, eval = TRUE}
+script.name <- "fig1a.R"
+source(file.path(scripts.dir, script.name))
+fig1a
+```
+
+## 1B
+
+See data analyses vignette in [`recountmethylation`](https://bioconductor.org/packages/devel/bioc/vignettes/recountmethylation/inst/doc/recountmethylation_data_analyses.pdf)
+
+# Figure 2
+
+## 2A BeadArray control outcomes
+
+Source the script "fig2a.R". This creates control outcomes from BeadArray signals
+in Table S2, then generates the plot object.
+
+```{r, eval = TRUE}
+script.name <- "fig2a.R"
+source(file.path(scripts.dir, script.name))
+fig2a
+```
+
+## 2B Quality signals, by storage condition
+
+See data analyses vignette in [`recountmethylation`](https://bioconductor.org/packages/devel/bioc/vignettes/recountmethylation/inst/doc/recountmethylation_data_analyses.pdf)
+
+## 2C Percent BeadArray control failure, by storage condition
+
+## 2D Study-level quality assessments
+
+```{r, eval = TRUE}
+script.name <- "fig2d.R"
+source(file.path(scripts.dir, script.name))
+draw(hmlist, row_title = paste0("Study ID (N = ", 
+                                length(gsesize.subset),")"), 
+     column_title = "Sub-threshold Frequency", 
+     heatmap_legend_side = "right", annotation_legend_side = "right")
+```
+
+# Figure 3 PCA of autosomal DNAm
+
+Details including sample identification, analyses, and results summaries are detailed in 
+the script `pca_fig3.R`. This script generates the files contained in 
+`r system.file("extdata", "pcadata", package = pkgname)`, which are used below to 
+generate the main plots.
+
+## 3A
+
+Run the following to generate the scatterplot of the top two components from PCA of 
+all samples. Red points are noncancer blood, purple points are leukemia samples.
+
+```{r, eval = TRUE}
+script.name <- "fig3a.R"
+source(file.path(scripts.dir, script.name))
+fig3a
+```
+
+## 3B
+
+Run the following to generate the scatterplot of the top two components from PCA of 
+all samples except blood or leukemias. Blue points are noncancer brain, dark cyan points are 
+brain tumors.
+
+```{r, eval = TRUE}
+script.name <- "fig3b.R"
+source(file.path(scripts.dir, script.name))
+fig3b
+```
+
+## 3C
+
+Run the following to generate the scatterplot of the top two components from PCA of 
+7 noncancer tissues: sperm (blue); adipose (dark red); blood (red); brain (purple); buccal (orange); nasal (light green); and liver (dark green).
+
+```{r, eval = TRUE}
+script.name <- "fig3c.R"
+source(file.path(scripts.dir, script.name))
+fig3c
+```
+
+## 3D
+
+Run the following to generate the scatterplot of the top two components from PCA of 
+6 noncancer tissues: adipose (dark red); blood (red); brain (purple); buccal (orange); nasal (light green); and liver (dark green).
+
+```{r, eval = TRUE}
+script.name <- "fig3d.R"
+source(file.path(scripts.dir, script.name))
+fig3d
+```
+
+# Figure 4 DNAm variability in noncancer tissues
+
+For analysis details, see also the data analyses vignette in [`recountmethylation`](https://bioconductor.org/packages/devel/bioc/vignettes/recountmethylation/inst/doc/recountmethylation_data_analyses.pdf) 
+
+## 4A
+
+Violin plots of 14,000 high variance probes
+
+```{r}
+script.name <- "fig4a.R"
+source(file.path(scripts.dir, script.name))
+fig4a
+```
+
+## 4B
+
+Stacked barplots of probe region summaries
+
+```{r}
+script.name <- "fig4b.R"
+source(file.path(scripts.dir, script.name))
+fig4b
+```

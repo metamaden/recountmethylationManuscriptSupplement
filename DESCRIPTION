@@ -1,0 +1,23 @@
+Package: recountmethylationManuscriptSupplement
+Version: 1.0
+Title: Supplement for the manuscript "Human methylome variation across Infinium 450K data on the Gene Expression Omnibus"
+Authors@R: c(person(c("Sean", "K"), "Maden", role = c("cre", "aut"),
+        email = "maden@ohsu.edu", comment = c(ORCID = "0000-0002-2212-4894")),
+    person("Reid F", "Thompson", role = "aut", comment = c(ORCID = "0000-0003-3661-5296")),
+    person("Kasper D", "Hansen", role = "aut", email = "hansen@jhsph.edu", comment = c(ORCID = "0000-0002-3303-4819")),
+    person("Abhinav", "Nellore", role = "aut", email = "nellore@ohsu.edu", comment = c(ORCID = "0000-0001-8145-1484")))
+Description: Supplemental info, code, and data for the manuscript.
+License: Artistic-2.0
+Encoding: UTF-8
+URL: https://github.com/metamaden/recountmethylation_manuscript_supplement
+BugReports: https://github.com/metamaden/recountmethylation_manuscript_supplement/issues
+LazyData: FALSE
+Depends: R (>= 4.0.0)
+Imports:
+Suggests:
+    knitr,
+    ggplot2,
+    gridExtra
+VignetteBuilder: 
+    knitr
+RoxygenNote: 7.1.1

@@ -1,0 +1,103 @@
+---
+title: "Supplemental Figures"
+author: "Sean Maden"
+date: "10/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(recountmethylationManuscriptSupplement)
+pkgname <- "recountmethylationManuscriptSupplement"
+scripts.dir <- system.file("scripts", package = pkgname)
+
+library(ggplot2)
+library(gridExtra)
+library(data.table)
+
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+# Figure S1
+
+Obtain sample (GSM IDs) and study (GSE IDs) summaries from queries to GEO 
+with queries to Entrez utilities. With 
+[Entrez utilities](https://www.ncbi.nlm.nih.gov/books/NBK179288/) installed, navigate 
+to the directory with the script "eqplot.py" and run:
+
+```
+python3 eqplot.py
+```
+
+This will cause data queries to the GEO servers, and result in the creation 
+of several new files, "gsmyeardata", "gsmidatyrdata", "gseyeardata", and 
+"gseidatyrdata". Finally, run the script "fig1a.R" to make the plot.
+
+```{r, eval = TRUE}
+script.name <- "figS1.R"
+source(file.path(scripts.dir, script.name))
+figS1
+```
+
+# Figure S2
+
+```{r}
+script.name <- "figS2.R"
+source(file.path(scripts.dir, script.name))
+figS2
+```
+
+# Figure S3
+
+```{r}
+script.name <- "figS3.R"
+source(file.path(scripts.dir, script.name))
+figS3
+```
+
+# Figure S4
+
+```{r}
+script.name <- "figS4.R"
+source(file.path(scripts.dir, script.name))
+figS4
+```
+
+# Figure S5
+
+```{r}
+script.name <- "figS5.R"
+source(file.path(scripts.dir, script.name))
+figS5
+```
+
+# Figure S6
+
+Details including sample identification, analyses, and results summaries are detailed in 
+the script `pca_fig3.R`. This script generates the files contained in 
+`r system.file("extdata", "pcadata", package = pkgname)`, which are used below to 
+generate the main plots.
+
+```{r}
+script.name <- "figS6.R"
+source(file.path(scripts.dir, script.name))
+figS6a
+```
+```{r}
+figS6b
+```
+
+# Figure S7
+
+```{r}
+script.name <- "figS7.R"
+source(file.path(scripts.dir, script.name))
+figS7
+```
+
+# Figure S8
+
+```{r}
+script.name <- "figS8.R"
+source(file.path(scripts.dir, script.name))
+figS8
+```
