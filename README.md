@@ -7,18 +7,19 @@ This repo contains supplemental methods, data, code, and scripts for the manuscr
 This repo is designed to work like a typical R packaage. You can install and load the repo from an active R session with:
 
 ```
-devtools::github_install("metamaden/recountmethylationManuscriptSupplement")
+pkg.name <- "recountmethylationManuscriptSupplement"
+repo.path <- file.path("metamaden", pkg.name)
+
+devtools::install_github(repo.path, build_vignettes = TRUE)
+
 library(recountmethylationManuscriptSupplement)
 ```
 
-You may then access the main Supplemental Information document using:
+Documentation, including Supplemental Information and vignettes that reproduce the manuscript figures, can be found using:
 
 ```
-```
-
-Access the figures vignettes using:
-
-```
+doc.path <- system.file("docfiles", package = pkg.name)
+list.files(doc.path)
 ```
 
 ## Resources of interest

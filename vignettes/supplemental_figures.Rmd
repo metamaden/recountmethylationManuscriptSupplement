@@ -2,7 +2,9 @@
 title: "Supplemental Figures"
 author: "Sean Maden"
 date: "10/8/2020"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
