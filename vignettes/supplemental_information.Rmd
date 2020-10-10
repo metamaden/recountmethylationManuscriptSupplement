@@ -40,7 +40,13 @@ knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warning = FALSE,
 
 ## Sample identification
 
-DNA methylation (DNAm) array samples were identified as published to the Gene Expression Omnibus (GEO) and available in the GEO Data Sets database as of March 31, 2019. The Entrez Utilities software (v.10.9) was used to quantify DNAm array sample availability by year and platform for 3 major Illumina BeadArray platforms (HM450K, HM27K, and EPIC/HM850K, Figures 1 and S1, see [script `eqplot.py`](https://github.com/metamaden/recountmethylation_manuscript_supplement/tree/master/inst/scripts)).
+DNA methylation (DNAm) array samples were identified as published to the Gene Expression Omnibus (GEO) and available in the GEO Data Sets database as of March 31, 2019. 
+
+The Entrez Utilities software (v.10.9) was used to quantify DNAm array sample availability by year and platform for 3 major Illumina BeadArray platforms (HM450K, HM27K, and EPIC/HM850K.
+
+
+
+
 
 ## Data acquisition
 
