@@ -1,15 +1,12 @@
 #!/usr/bin/env R
 
 # Author: Sean Maden
-#
-# This script describes the coercion of mined metadata into 
-# shared term labels for sample type, disease state, gender, 
-# age, anatomic location, etc. As input, this script loads the
-# list of study-wise SOFT metadata tables downloaded from GEO
-# -- see the script "make_gse_annolist.R" for details.
-#
-# For details about acquiring the SOFT metadata, see the
-# "recount-methylation-server" GitHub repo.
+# This script describes the coercion of mined metadata into shared term 
+# labels for sample type, disease state, gender, age, anatomic location, 
+# etc. As input, this script loads the list of study-wise SOFT metadata 
+# tables downloaded from GEO (see the script "make_gse_annolist.R" for 
+# details). For info about acquiring the SOFT metadata, see the repo
+# "recount-methylation-server".
 
 #----------
 # load data

@@ -1,5 +1,6 @@
 #!/usr/bin/env
 
+# Author: Sean Maden
 # Summaries of samples and studies as barplots, 
 # and fraction of array probes filtered after
 
@@ -8,7 +9,7 @@ library(ggplot2)
 #----------
 # load data
 #----------
-# anvoa barplot data frame
+# anova barplot data frame
 pkgname <- "recountmethylationManuscriptSupplement"
 nct7.dir <- system.file("extdata", "nct7", package = pkgname) 
 bpdf.path <- file.path(nct7.dir, "anova-filt_nct.table")

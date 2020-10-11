@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # Get BeadArray control outcomes from quality signals, do PCA and 
 # ANOVAs on sample outcomes, then summarize results in component-wise
 # stacked barplot screeplot (figS4). 

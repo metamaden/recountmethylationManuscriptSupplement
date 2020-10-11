@@ -1,5 +1,6 @@
 #!/usr/bin/env
 
+# Author: Sean Maden
 # Summarize genome region mappings at probes with
 # low variance and mean DNAm differences/ranges across
 # 7 noncancer tissues (figS8).

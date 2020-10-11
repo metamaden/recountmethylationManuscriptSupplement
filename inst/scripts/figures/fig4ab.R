@@ -1,7 +1,8 @@
 #!/usr/bin/env R
 
-# Make violin plots of high variance probes in 
-# 7 noncancer tissues (fig4a and fig4b).
+# Author: Sean Maden
+# Make violin plots of high variance probes in 7 noncancer tissues 
+# (fig4a and fig4b).
 
 library(ggplot2)
 

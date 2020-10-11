@@ -1,7 +1,8 @@
 #!/usr/bin/env R
 
-# Make figure 2A, BeadArray controls stacked barplot
-# of sample performance outcomes.
+# Author: Sean Maden
+# Make figure 2A, BeadArray controls stacked barplot of sample performance 
+# outcomes.
 
 library(ggplot2)
 library(ggforce)

@@ -1,31 +1,43 @@
 #!/usr/bin/env/R
 
-# Describes postprocessing from coerced GEO GSM metadata.
-# Notes on rules for regex matching:
-# 1. var states having phrases separated by spaces, to be separated by underscores
-# 2. variable with more than one state have states separated by semicolons
-# 3. all var states tolower (lowercase only)
-# 4. auto-populate redundant variable states
-# 5. add negative match check for disease status (e.g. excludes "non-cancer" from "cancer" search)
+# Author: Sean Maden
+# This script shows the postprocessing of mined metadata after manual annotations by 
+# study/GSE (see the script `gseanno_manualharmonize.R` for details). Several metadata
+# files and datasets are loaded and used as shown. The returned metadata object 
+# corresponds to the main metadata table (Table S1).
+# 
+# Label mapping is accomplished with regular expressions using the helper functions 
+# `get_pstr()`, `get_pstr_neg()`, `get_filt()`, and `appendvar`. For pattern matching 
+# and label mapping, the following rules are used:
+# 
+# * var states having phrases separated by spaces, to be separated by underscores
+# * variable with more than one state have states separated by semicolons
+# * all var states tolower (lowercase only)
+# * auto-populate redundant variable states
+# * add negative match check for disease status (e.g. excludes "non-cancer" from "cancer" search)
 
 library(data.table)
 
-load("md-preprocess.rda") # coerced, partially annotated metadata
-load("mdmap-gsm_35k.rda") # MetaSRA-pipeline, mapped and predicted labels
-ccf = fread('ccformat.txt', sep = ' ', header = T) # formatted Cellosaurus records
-load("prepmd.rda") # storage procedure annotations
-
-md <- md.preprocess
+#----------------------
+# load data, set params
+#----------------------
+# load preprocessed md, define postprocessed df
+md <- get(load("md-preprocess.rda")) # coerced, partially annotated metadata
 mdpost <- md[,c(1, 2, 3)]
 nfn <- "md-postprocess.rda" # new file name
-mdpost$sampletype <- mdpost$tissue = mdpost$disease = "NA"
+mdpost$sampletype <- mdpost$tissue <- mdpost$disease <- "NA"
 mdpost$arrayid_full <- paste0(md$array_id, "_", md$sentrix_id)
 mdpost$basename <- md$basename
+
+# load other data objects
+mdmap <- get(load("mdmap-gsm_35k.rda")) # MetaSRA-pipeline, mapped and predicted labels
+prepd <- get(load("prepmd.rda")) # storage procedure annotations
+ccf <- fread('ccformat.txt', sep = ' ', header = T) # formatted Cellosaurus records
 
 #-----------------
 # helper functions
 #-----------------
-get_pstr = function(v){
+get_pstr <- function(v){
   # get automatic regex patterns
   # does progressive capitalization on values separated by spaces
   # for each value in v, appends flanking '.*' (matches any char)
@@ -85,7 +97,7 @@ get_pstr = function(v){
   return(rs)
 }
 
-get_pstr_neg = function(pstr){
+get_pstr_neg <- function(pstr){
   # pstr: output of get_pstr
   # returns patterns for exclusion/negative lookup
   pstrg = gsub("\\.\\*", "_", pstr); pstrg = gsub("\\|", "", pstrg)
@@ -107,9 +119,8 @@ get_pstr_neg = function(pstr){
   return(ns)
 }
 
-get_filt = function(v, filtrel = "|",
-                    varl = c("gsm_title", "sample_type", "disease_state", "anatomic_location", "misc"),
-                    nfilt = FALSE, ntfilt = "", ptfilt = "", m = md){
+get_filt <- function(m = md, v, filtrel = "|", nfilt = FALSE, ntfilt = "", ptfilt = "",
+                     varl = c("gsm_title", "sample_type", "disease_state", "anatomic_location", "misc")){
   # Returns vector of conditionals corresponding to pattern match across vars in m
   # v: Reg. ex. output of get_pstr
   # nfilt: String output from 'get_pstr_neg', specifying negative lookup/exclusions
@@ -157,7 +168,7 @@ get_filt = function(v, filtrel = "|",
   return(filtl)
 }
 
-appendvar = function(var, val, filtv, m = mdpost){
+appendvar <- function(var, val, filtv, m = mdpost){
   # Returns the var in m with the appended value
   # Replaces NA terms, append new terms, does not append repeated terms
   varr = m[, colnames(m) == var]
@@ -1095,19 +1106,17 @@ save(mdpost, file = nfn)
 # Preparation, inc. Fresh Frozen, FFPE
 #--------------------------------------
 # from prepd object
-{
-  mdpost$storage = "NA"
-  prepd$storage = prepd$preparation
-  prepd$storage = ifelse(!grepl(".*FFPE.*", prepd$storage),
-                         "F;frozen", 
-                         "FFPE;formalin_fixed_paraffin_embedded")
-  prepd = prepd[,c("gsm", "storage")]
-  mf = mdpost[,c("gsm", "storage")]
-  prepd = rbind(prepd, mf[!mf$gsm %in% prepd$gsm,])
-  prepd = prepd[order(match(prepd$gsm, mf$gsm)),]
-  identical(prepd$gsm, mf$gsm)
-  mdpost$storage = prepd$storage
-}
+mdpost$storage = "NA"
+prepd$storage = prepd$preparation
+prepd$storage = ifelse(!grepl(".*FFPE.*", prepd$storage),
+                       "F;frozen", 
+                       "FFPE;formalin_fixed_paraffin_embedded")
+prepd = prepd[,c("gsm", "storage")]
+mf = mdpost[,c("gsm", "storage")]
+prepd = rbind(prepd, mf[!mf$gsm %in% prepd$gsm,])
+prepd = prepd[order(match(prepd$gsm, mf$gsm)),]
+identical(prepd$gsm, mf$gsm)
+mdpost$storage = prepd$storage
 
 save(mdpost, file = nfn)
 

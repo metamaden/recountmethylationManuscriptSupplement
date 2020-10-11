@@ -1,47 +1,36 @@
 #!/usr/bin/env R
 
-# Summarize probes with high tissue-specific autosomal 
-# DNAm variance across 7 noncancer tissues (Table S8).
+# Author: Sean Maden
+# Summarize probes with high tissue-specific autosomal DNAm variance across 7 
+# noncancer tissues (Table S8).
+
+library(minfiData)
 
 #----------
 # load data
 #----------
+# get minfi-formatted probe annotations
+cga <- getAnnotation(get(data("MsetEx")))
+# get probe ids
 pkgname <- "recountmethylationManuscriptSupplement"
-nct7.dir <- system.file("nct7", "pcadata", package = pkgname) 
-fn <- "lfilt_highvar-nc7.rda"
-txfiltl <- get(load(file.path(nct7.dir, fn)))
+nct7.dir <- system.file("extdata", "nct7", package = pkgname)
+id.fn <- "cgids_highvar_nct7.rda"
+ptid <- get(load(file.path(nct7.dir, id.fn)))
 
 #---------------
-# get table data
+# make new table
 #---------------
-t = "adipose"
-st = as.data.frame(txfiltl[[t]], stringsAsFactors = F)
-for(c in 2:ncol(st)){
-  st[,c] = round(as.numeric(st[,c]), 3)
-}
-st = cbind(data.frame(tissue = rep(t, nrow(st)), stringsAsFactors = F),
-           st)
-cgf = cga[cga$Name %in% st$cgid,]
-cgf = cgf[order(match(cgf$Name, st$cgid)),]
-identical(cgf$Name, st$cgid)
-sta = cbind(st, cgf[,c(1, 2, 3, 9, 14, 15, 20, 21, 22)])
+# get anno and match data
+cnames <- c("Name", "chr", "pos", "strand", "Type",	"Islands_Name", "Relation_to_Island",	
+            "UCSC_RefGene_Name", "UCSC_RefGene_Accession",	"UCSC_RefGene_Group")
+which.cn <- which(colnames(cga) %in% cnames)
+cgf <- cga[cga$Name %in% ptid$cgid, which.cn]
+cgf <- cgf[order(match(rownames(cgf), ptid$cgid)),]
+st <- cbind(ptid, cgf)
 
-for(t in names(txfiltl)[2:length(txfiltl)]){
-  st = as.data.frame(txfiltl[[t]], stringsAsFactors = F)
-  for(c in 2:ncol(st)){
-    st[,c] = round(as.numeric(st[,c]), 3)
-  }
-  st = cbind(data.frame(tissue = rep(t, nrow(st)), stringsAsFactors = F),
-             st)
-  cgf = cga[cga$Name %in% st$cgid,]
-  cgf = cgf[order(match(cgf$Name, st$cgid)),]
-  if(identical(cgf$Name, st$cgid)){
-    st = cbind(st, cgf[,c(1, 2, 3, 9, 14, 15, 20, 21, 22)])
-  } else{
-    message("sets not matched!")
-  }
-  sta = rbind(sta, st)
-}
-
-#save(sta, file = paste0(sta.name, ".rda"))
-#write.csv(sta, file = paste0(sta.name, ".csv"))
+#------
+# save
+#------
+st.fn <- "tableS8_highvar_7nct"
+save(st, file = paste0(sta.name, ".rda"))
+write.csv(st, file = paste0(st.fn, ".csv"), row.names = FALSE)

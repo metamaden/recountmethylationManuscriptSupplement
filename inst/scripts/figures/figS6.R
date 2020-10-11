@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # Make facet plots of data subsets for fig3 PCAs (figS6).
 
 library(ggplot2)

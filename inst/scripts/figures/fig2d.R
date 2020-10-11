@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # Make panel Fig 2C, study-level quality assessment outcomes
 
 library(ComplexHeatmap)

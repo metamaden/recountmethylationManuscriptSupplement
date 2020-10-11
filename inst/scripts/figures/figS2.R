@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # Make stacked barplot of MetaSRA-pipeline sample confidences
 # and most likely sample type predictions (figS2).
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env R
 
-# Make scatterplot of autosomal DNAm in 6 noncancer tissues
-# (fig3d).
+# Author: Sean Maden
+# Make scatterplot of autosomal DNAm in 6 noncancer tissues (fig3d).
 
 library(ggplot2)
 

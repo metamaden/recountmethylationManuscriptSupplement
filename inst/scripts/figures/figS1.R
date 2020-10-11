@@ -1,7 +1,8 @@
 #!/usr/bin/env R
 
-# Make Figure 1A panel plot of cumulative GEO samples (GSMs)
-# by year and available sample type.
+# Author: Sean Maden
+# Make Figure 1A panel plot of cumulative GEO samples (GSMs) by year 
+# and available sample type.
 
 library(ggplot2)
 library(data.table)

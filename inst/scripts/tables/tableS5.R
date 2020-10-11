@@ -1,9 +1,10 @@
 #!/usr/bin/env R
 
-# Make study-wise quality controls table S5. Calculates
-# fi for 17 BeadArray controls, methylated and unmethylated signals,
-# then applies criteria i (fi, failing at least 1 BA control, > 60%) 
-# and criteria ii (fi, below 11 for both signals, > 60%).
+# Author: Sean Maden
+# Make study-wise quality controls table S5. Calculates fi for 17 BeadArray 
+# controls, methylated and unmethylated signals, then applies criteria i 
+# (fi, failing at least 1 BA control, > 60%) and criteria ii (fi, below 11 
+# for both signals, > 60%).
 
 library(recountmethylationManuscriptSupplement)
 

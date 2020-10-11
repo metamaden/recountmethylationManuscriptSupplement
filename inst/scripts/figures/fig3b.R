@@ -1,8 +1,8 @@
 #!/usr/bin/env R
 
-# Make scatterplot of autosomal DNAm in all tissues without 
-# blood or leukemia samples, with labels for brain and
-# brain tumor (fig3b).
+# Author: Sean Maden
+# Make scatterplot of autosomal DNAm in all tissues without blood or leukemia 
+# samples, with labels for brain and brain tumor (fig3b).
 
 library(ggplot2)
 

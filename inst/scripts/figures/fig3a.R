@@ -1,7 +1,8 @@
 #!/usr/bin/env R
 
-# Make scatterplot of autosomal DNAm in all tissues, with labels
-# for blood and leukemia samples (fig3a).
+# Author: Sean Maden
+# Make scatterplot of autosomal DNAm in all tissues, with labels for 
+# blood and leukemia samples (fig3a).
 
 library(ggplot2)
 

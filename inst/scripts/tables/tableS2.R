@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # This script shows how to generate the main quality signal metrics (Table S2). 
 # Note this requires a large file download to obtain the RGChannelSet object. 
 # From this object are derived the, BeadArray control signals using `bactrl()`, 

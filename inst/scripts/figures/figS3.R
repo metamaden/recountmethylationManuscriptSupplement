@@ -1,5 +1,6 @@
 #!/usr/bin/env R
 
+# Author: Sean Maden
 # Make signal plots of BeadArray controls.
 
 #----------
