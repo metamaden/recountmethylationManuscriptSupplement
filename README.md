@@ -1,4 +1,4 @@
-# recountmethylation_manuscript_supplement
+# recountmethylationManuscriptSupplement
 
 This repo contains supplemental methods, data, code, and scripts for the manuscript "Human methylome variation across Infinium 450K data on the Gene Expression Omnibus."
 
