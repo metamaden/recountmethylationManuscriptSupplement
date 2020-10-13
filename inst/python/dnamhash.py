@@ -4,7 +4,16 @@
 
 Authors: Sean Maden, Abhi Nellore
 
-Perform feature hashing on a data matrix.
+Perform feature hashing on a dataset. The main function `feature_hash` performs
+ the hashing (a.k.a. "hashing trick") on an array or row of data, into 
+ `target_dim` dimensions. This script can be called from command line. For 
+ example, use the following from a shell session for a csv table (with 500 rows 
+ X 400000 columns) called "input.csv":
+
+> python3 dnamhash.py --filepath "input.csv" --hashdim 1000 --sepsymbol ","
+
+This creates a new csv of the hashed feature data called "input_hashed.csv", 
+which has 500 rows X 1000 columns.
 
 """ 
 
@@ -16,18 +25,17 @@ def feature_hash(arr, target_dim=1000):
     """ feature_hash
     
     Performs feature hashing on an array data object. This converts a table of
-    N1 features x M samples to a table of N2 features X M samples, where N1 is
-    the original feature count, and N2 is the target feature hashed dimension
-    count.
+    M X N1 (samples X features) to a table of M X N2 (samples X hashed features), 
+    where N1 is the original column count/feature dimensions, and N2 is the new 
+    column count/dimensions of the hashed dataset, and typically N1 >> N2.
 
     Arguments:
-    * arr : An array object, where columns are features to be hashed, and rows
-        are samples.
-    * target_dim : The target dimensions of the feature hashed data object 
+    * arr : A single row of numeric sample data as an array, where the array 
+        length equals the original feature count.
+    * target_dim : The target dimensions of the new row of feature hashed data 
         (integer, 1000).
 
-    Returns: 
-        Feature hashed data object
+    Returns: The hashed data row.
 
     """
     low_d_rep = [0 for _ in range(target_dim)]
@@ -44,14 +52,18 @@ if __name__ == "__main__":
 
     Apply the feature hashing script to a data file from command line.
     Specify the file name/path, and optionally specify the hash dimensions 
-    (default 1000), separator symbol (default " "), and new file contianing the
+    (default 1000), separator symbol (default " "), and new file containing the
     hashed features data (default <INPUT TABLE NAME> + "_hashed.csv").
-    
-    For example, use the following from a shell session:
 
-    > python3 dnamhash.py --filepath <INPUT TABLE NAME> --hashdim 1000
+    Arguments:
 
-    This returns the new table of hashed features.
+    * --filepath: Path to input table (rows are samples, columns are features).
+    * -- hashdim: Target number of columns for the hashed data (integer, 1000).
+    * -- sepsymbol: Separator symbol for the input data table (string, " ").
+    * -- newpath: Optional file name or path to hashed csv (string, 
+    default <input_filename> + "_hashed.csv")
+
+    Returns: Feature hashed dataset as a csv table.
 
     """
     import argparse
