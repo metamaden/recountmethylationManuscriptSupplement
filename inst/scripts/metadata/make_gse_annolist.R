@@ -1,10 +1,14 @@
 #!/usr/bin/env R
 
 # Author: Sean Maden
-# Make list object containing study/GSE annotations. This script reads in 
-# filtered JSON-formatted sample/GSM data, derived from GEO GSE SOFT files, 
-# and returns a list of mined metadata as a list. The input is a filtered
-# table of IDs returned from a call to the script "edirect_query.py".
+# Make list object containing study/GSE SOFT-derived metadata. This script 
+# reads in filtered JSON-formatted sample/GSM data, derived from GEO GSE 
+# SOFT files, and returns as a table in a list. 
+# 
+# This script takes as input a query object, as generated using the script
+# "edirect_query.py", that associates GSM IDs with GSE IDs, which is then 
+# used to read in filtered GSM JSON files The input is a filtered table of 
+# IDs returned from a call to the script.
 
 require(data.table)
 require(rjson)
@@ -13,8 +17,15 @@ require(rjson)
 # load data, specify json location
 #---------------------------------
 # read in a query filt table 
-eqf <- "gsequery_filt.1552256509"
-x <- scan(eqf, what="", sep="\n")
+pkgname <- "recountmethylationManuscriptSupplement"
+md.dir <- system.file("extdata", "metadata", package = pkgname) 
+eq.fn <- "gsequery_filt.1552256509"
+eq.path <- file.path(md.dir, eq.fn)
+
+#-----------------------------
+# get a list of gsm ids by gse
+#-----------------------------
+x <- scan(eq.path, what="", sep="\n")
 gsel <- list()
 for(i in 1:length(x)){
   ssi <- unlist(strsplit(x[[i]]," "))
@@ -22,9 +33,9 @@ for(i in 1:length(x)){
   message(i)
 }
 
-#---------------------
-# make gse tables list
-#---------------------
+#---------------------------------------------
+# get tables list from filtered gsm json files
+#---------------------------------------------
 dn <- "gsm_json_filt"; tgse.list <- list()
 for(g in 1:length(gsel)){
   lgse <- list(); gseid <- as.character(names(gsel)[g]); ggse <- gsel[[g]]
@@ -70,6 +81,7 @@ for(g in 1:length(gsel)){
 #----------
 # save gse tables list
 save(tgse.list, file="geo_gse-atables_list.rda")
+
 # extract as annotation tables
 for(t in 1:length(tgse.list)){
   new.fn <- paste0(names(tgse.list)[t],"_annotable.csv")

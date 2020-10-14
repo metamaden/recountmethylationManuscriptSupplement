@@ -1,9 +1,14 @@
 #!/usr/bin/env R
 
 # Author: Sean Maden
-# This script describes the coercion of mined metadata into shared term 
-# labels for sample type, disease state, gender, age, anatomic location, 
-# etc. As input, this script loads the list of study-wise SOFT metadata 
+# This script describes the metadata preprocessing. This includes 
+# harmonization of the mined metadata by moving terms under several 
+# common variables for sample type, disease state, gender, age, anatomic 
+# location, etc. It takes as input a list of available GSE SOFT file 
+# data as a flat file. For each study, available data is assigned to 
+# one of several variables.
+#
+# As input, this script loads the list of study-wise SOFT metadata 
 # tables downloaded from GEO (see the script "make_gse_annolist.R" for 
 # details). For info about acquiring the SOFT metadata, see the repo
 # "recount-methylation-server".
@@ -11,7 +16,12 @@
 #----------
 # load data
 #----------
-tgse.list <- get(load("datafiles/geo_gse-atables_list.rda"))
+# load a list of the soft-derived terms
+pkgname <- "recountmethylationManuscriptSupplement"
+md.dir <- system.file("extdata", "metadata", package = pkgname) 
+ldat.fn <- "geo_gse-atables_list.rda"
+tgse.list <- get(load(file.path(md.dir, ldat.fn)))
+# start the preprocessed metadata set 
 gat <- matrix(nrow = 0, ncol = 8)
 colnames(gat) <- c("gsm","gse","sample_type","disease_state",
                    "gender","age","anatomic_location","misc")
@@ -179,7 +189,7 @@ for(r in 1:nrow(ti)){
   message(r)
 }
 
-# study 10: GSE121633
+# GSE121633
 i=10
 ti <- as.data.frame(tgse.list[[i]], stringsAsFactors = F)
 head(ti)
@@ -195,6 +205,10 @@ for(r in 1:nrow(ti)){
                            nrow=1))
   message(r)
 }
+
+#--------------------
+# resort and continue
+#--------------------
 
 # resort by size, and continue
 sv <- unlist(lapply(tgse.list,nrow))
@@ -9556,25 +9570,9 @@ tlsf <- tlsf[sample(length(tlsf),length(tlsf))] # randomize order
   }
 }
 
-# study   
-{
-  i=
-    ti <- as.data.frame(tlsf[[i]], stringsAsFactors = F)
-  head(ti)
-  for(r in 1:nrow(ti)){
-    gat <- rbind(gat, matrix(c(ti$gsm[r], # GSM ID
-                               ti$gse[r], # GSE ID
-                               "NA", # Sample type
-                               "NA", # Disease state
-                               "NA", # Gender
-                               "NA", # Age
-                               "NA", # Anatomic Location
-                               paste0("NA")),# misc
-                             nrow=1))
-    message(r)
-  }
-}
-
+#--------------------------------
+# save the postprocessed metadata
+#--------------------------------
 
 save(gat,file="geoanno_478gse.rda")
 write.csv(gat,file="geoanno_478gse.csv")
