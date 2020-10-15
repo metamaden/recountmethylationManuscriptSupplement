@@ -17,12 +17,11 @@ require(rjson)
 # load data, specify json location
 #---------------------------------
 # read in a query filt table 
+#eq.path <- file.path("recount-methylation-files", "equery", "gsequery_filt.1602784017")
 pkgname <- "recountmethylationManuscriptSupplement"
 md.dir <- system.file("extdata", "metadata", package = pkgname) 
 eq.fn <- "gsequery_filt.1552256509"
 eq.path <- file.path(md.dir, eq.fn)
-
-eq.path <- file.path("recount-methylation-files", "equery", "gsequery_filt.1602784017")
 
 #-----------------------------
 # get a list of gsm ids by gse

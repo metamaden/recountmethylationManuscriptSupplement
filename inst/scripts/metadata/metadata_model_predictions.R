@@ -38,10 +38,14 @@ celltypepred <- estimateCellCounts(rgset)
 # age predictions
 predage <- agep(getBeta(grset))
 
-#-----------
-# make table
-#-----------
+#--------------------
+# make and save table
+#--------------------
+table.fn <- "mdmod"
 mdmod <- data.frame(gsm = rownames(predage))
 mdmod <- cbind(mdmod, cbind(sexpred[,3], cbind(predage, celltypepred)))
 colnames(mdmod) <- c("gsm", "predsex", "predage", 
                      paste0("predcell.", colnames(mdmod)[4:9]))
+
+save(mdmod, file = paste0(table.fn, ".rda"))
+write.csv(mdmod, file = paste0(table.fn, ".csv"))

@@ -172,3 +172,44 @@ appendvar <- function(var, val, filtv, m = mdpost){
   }
   return(NULL)
 }
+
+#' Match and combine 2 datasets
+#'
+#' Orders 2 datasets on corresponding variables, then appends an NA
+#' matrix as needed before binding on columns. This is mainly used to 
+#' combine different types of sample metadata on common/shared GSM IDs.
+#' Note columns should be matchable after calling `as.character()` for
+#' each.
+#'
+#' @param d1 First dataset to combine
+#' @param d2 Second dataset to combine
+#' @param ci1 Column index in first dataset to match on
+#' @param ci2 Column index in second dataset to match on
+#' @returns Union of the 2 datasets, including NA values where appropriate.
+#' @export
+match1to2 <- function(d1, d2, ci1 = 2, ci2 = 1){
+  id.all <- unique(c(d1[, ci1], d2[, ci2]))
+  id1 <- gsm.all[!gsm.all %in% d1[, ci1]]
+  id2 <- gsm.all[!gsm.all %in% d2[, ci2]]
+  # append na slices as necessary
+  if(length(id1) > 0){
+    nav <- rep(rep("NA", length(id1)), ncol(d1) - 1)
+    mna <- matrix(c(id1, nav), nrow = length(id1), ncol = ncol(d1))
+    d1 <- rbind(d1, mna)
+  }
+  if(length(id2) > 0){
+    nav <- rep(rep("NA", length(id2)), ncol(d2) - 1)
+    mna <- matrix(c(id2, nav), nrow = length(id2), ncol = ncol(d2))
+    d2 <- rbind(d2, mna)
+  }
+  # reorder and assign title var
+  match.gsm1 <- match(as.character(d1[, ci1]), as.character(d2[, ci2]))
+  order.gsm1 <- order(match.gsm1); d1 <- d1[order.gsm1,]
+  match.gsm2 <- match(as.character(d2[, ci2]), as.character(d1[, ci1]))
+  order.gsm2 <- order(match.gsm2); d2 <- d2[order.gsm2,]
+  cond <- identical(as.character(d2[, ci2]), as.character(d1[, ci1]))
+  if(cond){return(cbind(d1, d2))} else{
+    stop("there was an issue matching the final datasets...")
+  }
+  return(NULL)
+}

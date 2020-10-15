@@ -73,6 +73,9 @@ source(file.path(md.scripts.dir, "get_gsm_titles.R"))
 # from process_soft import run_metasrapipeline
 # run_metasrapipeline(pycall = 'python')
 
+# get the mapped results, and collapsed gse ids
+source(file.path(md.scripts.dir, "get_msrap_mdmap.R"))
+
 #------------------------------
 # process soft-derived metadata
 #------------------------------
@@ -84,12 +87,7 @@ source(file.path(md.scripts.dir, "metadata_preprocessing.R"))
 # do postprocessing
 source(file.path(md.scripts.dir, "metadata_postprocessing.R"))
 
-#----------------
-# append new data 
-#----------------
-# append data 
-source(file.path(tables.scripts.dir, "tableS1.R"))
-
-#----------------
-# save and return
-#----------------
+#-----------------------
+# append data and return
+#-----------------------
+source(file.path(md.scripts.dir, "make_md_final.R"))
