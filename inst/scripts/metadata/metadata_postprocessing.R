@@ -27,7 +27,24 @@ library(recountmethylationManuscriptSupplement)
 pkgname <- "recountmethylationManuscriptSupplement"
 metadata.dir <- system.file("extdata", "metadata", package = pkgname)
 # load preprocessed metadata
-md <- get(load(file.path(metadata.dir, "md-preprocess.rda")))
+md.fn <- "md_preprocess.rda"
+md <- get(load(file.path(metadata.dir, md.fn)))
+# load gsm titles data
+titles.fn <- "gsm_jsontitledf.rda"
+gsmtitles <- get(load(file.path(metadata.dir, titles.fn)))
+
+#----------------------
+# append the gsm titles
+#----------------------
+gsm.out <- gsmtitledf[!gsmtitledf$gsm %in% md$gsm,]$gsm
+nam <- data.frame(gsm = gsm.out)
+na.dat <- rep(rep("NA", length(gsm.out)), ncol(md) - 1)
+nam <- cbind(nam, matrix(c(na.dat), ncol = ncol(md) - 1))
+colnames(nam) <- colnames()
+
+#---------------------------------
+# start new postprocessed metadata
+#---------------------------------
 mdpost <- md[,c(1, 2, 3)]
 mdpost$sampletype <- mdpost$tissue <- mdpost$disease <- "NA"
 mdpost$arrayid_full <- paste0(md$array_id, "_", md$sentrix_id)

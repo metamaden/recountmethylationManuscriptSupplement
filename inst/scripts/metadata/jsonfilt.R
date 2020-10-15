@@ -10,18 +10,28 @@
 library(readr)
 library(jsonlite)
 
-#----------------------------
-# load data/assign parameters
-#----------------------------
-json.dn <- "gsm.json"; readpath <- json.dn
-# preamable, setting up shared variables
-destpath <- "gsm_json_filt"; filestem = ".json.filt"
+#------------------------
+# assign dir's and path's
+#------------------------
+# input dir/path
+json.dn <- "gsm_json"
+readpath <- file.path("recount-methylation-files", json.dn)
+
+# output dir/path
+jfilt.dn <- paste0(json.dn, "_filt")
+destpath <- file.path("recount-methylation-files", jfilt.dn)
+if(!dir.exists(destpath)){dir.create(destpath)}
+
+# new files stem
+filestem <- ".json.filt"
+
+# keys of interest
 keys.list <- c("!Sample_characteristics_ch1", "!Sample_source_name_ch1", 
                "!Sample_title")
 
-#-------------------
-# process json files 
-#-------------------
+#------------------
+# filter json files
+#------------------
 lf.json <- list.files(readpath)
 # write filtered data as new json files
 for(i in seq(length(lf.json))){
@@ -42,4 +52,3 @@ for(i in seq(length(lf.json))){
   write_lines("]", writepath, append=T)
   message("finished file ",i)
 }
-
