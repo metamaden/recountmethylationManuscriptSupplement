@@ -18,12 +18,12 @@ json.dn <- "gsm_json"
 readpath <- file.path("recount-methylation-files", json.dn)
 
 # output dir/path
-jfilt.dn <- paste0(json.dn, "_filt")
+jfilt.dn <- json.dn # paste0(json.dn, "_filt")
 destpath <- file.path("recount-methylation-files", jfilt.dn)
 if(!dir.exists(destpath)){dir.create(destpath)}
 
 # new files stem
-filestem <- ".json.filt"
+filestem <- "json.filt"
 
 # keys of interest
 keys.list <- c("!Sample_characteristics_ch1", "!Sample_source_name_ch1", 
@@ -32,11 +32,15 @@ keys.list <- c("!Sample_characteristics_ch1", "!Sample_source_name_ch1",
 #------------------
 # filter json files
 #------------------
+# get unfiltered soft files
 lf.json <- list.files(readpath)
+lf.json <- lf.json[!grepl(".*filt.*", lf.json)]
 # write filtered data as new json files
 for(i in seq(length(lf.json))){
-  fni <- lf.json[i]; gsmi <- unlist(strsplit(fni,"\\."))[2]
-  writefn <- paste0(gsmi, filestem, collapse = ".")
+  fni <- lf.json[i]
+  ts <- unlist(strsplit(fni,"\\."))[1] # timestamp
+  gsmi <- unlist(strsplit(fni,"\\."))[2] # gsm id
+  writefn <- paste(ts, gsmi, filestem, sep = ".")
   writepath <- file.path(destpath, writefn)
   rjsoni <- jsonlite::fromJSON(file.path(readpath,fni))
   # filter on valid sample-specific keys

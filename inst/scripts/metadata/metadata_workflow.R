@@ -67,19 +67,18 @@ source(file.path(md.scripts.dir, "get_gsm_titles.R"))
 # run metasra-pipeline and map results
 #-------------------------------------
 # from a python3 session:
-# process_soft.msrap_screens(nscreensi=200, nmaxscreens=35, qcprint=True)
-
-# 
-
-#-------------------------
-# get metadata tables list
-#-------------------------
-source(file.path(md.scripts.dir, "make_gse_annolist.R"))
+# import os
+# import sys
+# sys.path.insert(0, os.path.join("recount-methylation-server","src"))
+# from process_soft import run_metasrapipeline
+# run_metasrapipeline(pycall = 'python')
 
 #------------------------------
 # process soft-derived metadata
 #------------------------------
-# preprocessing
+# get gse md tables list
+source(file.path(md.scripts.dir, "make_gse_annolist.R"))
+# do preprocessing
 source(file.path(md.scripts.dir, "metadata_preprocessing.R"))
 
 # do postprocessing

@@ -4,19 +4,21 @@
 \alias{appendvar}
 \title{Append mapped terms to a metadata variable}
 \usage{
-appendvar(var, val, filtv, m)
+appendvar(var, val, filtv, m = mdpost)
 }
 \arguments{
-\item{var}{The variable in the metadata to assess.}
+\item{var}{Variable in m for which to append new terms.}
 
-\item{val}{Character string for regex matching.}
+\item{val}{Character string to append to matched samples.}
 
-\item{filtv}{Vector of character strings to filter on.}
+\item{filtv}{Vector of boolean values identifying samples for which to
+append the new term.}
 
-\item{m}{Metadata for term lookup (data.frame).}
+\item{m}{The postprocessed metadata for which to append the new terms
+(data.frame, mdpost).}
 }
 \value{
-The result of assessing a regex match on a metadata variable.
+The result of appending new terms to specified var.
 }
 \description{
 Appends new variable data to a metadata variable, preserving current

@@ -26,6 +26,35 @@ mdmap <- get(load(file.path(metadata.dir, "mdmap-gsm_35k.rda")))
 # note, this file needs to be decompressed
 ccf <- fread(file.path(metadata.dir, 'ccformat.txt'), sep = ' ', header = T) 
 
+#----------------
+# helper function
+#----------------
+match1to2 <- function(){
+  d1 <- gat.all; d2 <- gsmtitledf
+  gsm.all <- unique(c(d1[,1], d2[,1]))
+  gsm1 <- gsm.all[!gsm.all %in% d1[,1]]
+  gsm2 <- gsm.all[!gsm.all %in% d2[,1]]
+  # append na slices as necessary
+  if(length(gsm1) > 0){
+    nav <- rep(rep("NA", length(gsm1)), ncol(d1) - 1)
+    mna <- matrix(c(gsm1, nav), nrow = length(gsm1), ncol = ncol(d1))
+    d1 <- rbind(d1, mna)
+  }
+  if(length(gsm2) > 0){
+    nav <- rep(rep("NA", length(gsm2)), ncol(d2) - 1)
+    mna <- matrix(c(gsm2, nav), nrow = length(gsm2), ncol = ncol(d2))
+    d2 <- rbind(d2, mna)
+  }
+  # reorder and assign title var
+  match.gsm1 <- match(as.character(d1[,1]), as.character(d2[,1]))
+  order.gsm1 <- order(match.gsm1)
+  d1 <- d1[order.gsm1,]
+  match.gsm2 <- match(as.character(d2[,1]), as.character(d1[,1]))
+  order.gsm2 <- order(match.gsm2)
+  d2 <- d2[order.gsm2,]
+  cond <- identical(as.character(d2[,1]), as.character(d1[,1]))
+}
+
 #-----------------------
 # storage condition data
 #-----------------------

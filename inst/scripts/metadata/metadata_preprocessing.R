@@ -16,11 +16,16 @@
 #----------
 # load data
 #----------
+# designate gse_tables path
+dir <- "gse_tables"; dpath <- file.path(dir)
 # load a list of the soft-derived terms
 pkgname <- "recountmethylationManuscriptSupplement"
 md.dir <- system.file("extdata", "metadata", package = pkgname) 
 ldat.fn <- "geo_gse-atables_list.rda"
-tls <- tls <- get(load(file.path(md.dir, ldat.fn)))
+tls <- get(load(file.path(md.dir, ldat.fn)))
+# load gsm titles
+titles.fn <- "gsm_jsontitledf.rda"
+tdf <- get(load(file.path(md.dir, titles.fn)))
 
 #-------------------------
 # process study/gse tables
@@ -30,22 +35,50 @@ gat.all <- matrix(nrow = 0, ncol = 8)
 colnames(gat.all) <- c("gsm","gse","sample_type","disease_state",
                        "gender","age","anatomic_location","misc")
 # append tables data
-dir <- "gse_tables"
-fnv <- list.files(dir)
+fnv <- list.files(dpath)
 for(gsei in seq(length(fnv))){
   source(file.path(dir, fnv[gsei]))
   gat.all <- rbind(gat.all, gat)
-  message(gsei)
+  # message(gsei)
 }
-
 gat.all <- gat.all[!duplicated(gat.all[,1]),]
+
+#------------------
+# append gsm titles
+#------------------
+# check for outersect gsm ids
+d1 <- gat.all; d2 <- gsmtitledf
+gsm.all <- unique(c(d1[,1], d2[,1]))
+gsm1 <- gsm.all[!gsm.all %in% d1[,1]]
+gsm2 <- gsm.all[!gsm.all %in% d2[,1]]
+# append na slices as necessary
+if(length(gsm1) > 0){
+  nav <- rep(rep("NA", length(gsm1)), ncol(d1) - 1)
+  mna <- matrix(c(gsm1, nav), nrow = length(gsm1), ncol = ncol(d1))
+  d1 <- rbind(d1, mna)
+}
+if(length(gsm2) > 0){
+  nav <- rep(rep("NA", length(gsm2)), ncol(d2) - 1)
+  mna <- matrix(c(gsm2, nav), nrow = length(gsm2), ncol = ncol(d2))
+  d2 <- rbind(d2, mna)
+}
+# reorder and assign title var
+match.gsm1 <- match(as.character(d1[,1]), as.character(d2[,1]))
+order.gsm1 <- order(match.gsm1)
+d1 <- d1[order.gsm1,]
+match.gsm2 <- match(as.character(d2[,1]), as.character(d1[,1]))
+order.gsm2 <- order(match.gsm2)
+d2 <- d2[order.gsm2,]
+cond <- identical(as.character(d2[,1]), as.character(d1[,1]))
+if(cond){
+  d1 <- as.data.frame(d1, stringsAsFactors = FALSE)
+  d1$gsm_title <- as.character(d2[,2])
+}
+mdpre <- d1
 
 #--------------------------------
 # save the postprocessed metadata
 #--------------------------------
-mdpre <- gat.all
-mdpre <- as.data.frame(mdpre, stringsAsFactors = FALSE)
-
 mdpre.fn <- "md_preprocess"
 save(mdpre, file = paste0(mdpre.fn, ".rda"))
 write.csv(mdpre, file = paste0(mdpre.fn, ".csv"))

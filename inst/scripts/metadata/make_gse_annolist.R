@@ -22,6 +22,8 @@ md.dir <- system.file("extdata", "metadata", package = pkgname)
 eq.fn <- "gsequery_filt.1552256509"
 eq.path <- file.path(md.dir, eq.fn)
 
+eq.path <- file.path("recount-methylation-files", "equery", "gsequery_filt.1602784017")
+
 #-----------------------------
 # get a list of gsm ids by gse
 #-----------------------------
@@ -36,15 +38,21 @@ for(i in 1:length(x)){
 #---------------------------------------------
 # get tables list from filtered gsm json files
 #---------------------------------------------
-dn <- "gsm_json_filt"; tgse.list <- list()
+dir <- "gsm_json"
+dpath <- file.path("recount-methylation-files", dir)
+lf.all <- list.files(dpath)
+tgse.list <- list()
 for(g in 1:length(gsel)){
-  lgse <- list(); gseid <- as.character(names(gsel)[g]); ggse <- gsel[[g]]
+  lgse <- list(); gseid <- as.character(names(gsel)[g])
+  ggse <- gsel[[g]] # gsm list
   # parse json metadata
   for(j in 1:length(ggse)){
-    fnj <- file.path(dn, paste0(ggse[j], ".json.filt"))
-    if(file.exists(fnj)){
+    ffilt <- grepl(ggse[j], lf.all) & grepl("\\.filt", lf.all)
+    lff <- lf.all[ffilt]
+    if(length(lff) > 0){
+      fnj <- file.path(dpath, lff)
       lgse[[ggse[j]]] <- fromJSON(paste(readLines(fnj), collapse=""))
-    }; message(j)
+    }
   }
   if(length(lgse)>0){
     tcols <- c() # make table columns
@@ -80,11 +88,11 @@ for(g in 1:length(gsel)){
 # save data
 #----------
 # save gse tables list
-save(tgse.list, file="geo_gse-atables_list.rda")
+new.fn <- "geo_gse-atables_list"
+save(tgse.list, file=paste0(new.fn, ".rda"))
 
 # extract as annotation tables
-for(t in 1:length(tgse.list)){
-  new.fn <- paste0(names(tgse.list)[t],"_annotable.csv")
-  write.csv(tgse.list[[t]], file = new.fn)
-}
-write.csv(gat, file="geo_hmd_22gse_12kgsm.csv")
+#for(t in 1:length(tgse.list)){
+#  new.fn <- paste0(names(tgse.list)[t],"_annotable.csv")
+#  write.csv(tgse.list[[t]], file = new.fn)
+#}

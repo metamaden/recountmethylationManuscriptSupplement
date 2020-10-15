@@ -15,52 +15,46 @@
 #' @seealso get_pstr_neg, get_filt, appendvar
 #' @export
 get_pstr <- function(v){
-  rs = ""
-  for(ci in 1:length(v)){
-    c = v[ci]
-    if(ci == 1){
-      rs = paste0(".*", c, ".*")
-    } else{
+  rs <- ""
+  for(ci in seq(length(v))){
+    c <- v[ci]
+    if(ci == 1){rs = paste0(".*", c, ".*")} else{
       rs = paste(c(rs, paste0(".*", c, ".*")), collapse = "|")
     }
-    uv = unlist(strsplit(c, " ")) # num space-sep units
+    uv <- unlist(strsplit(c, " ")) # num space-sep units
     # for each unit use lower- and uppercase
-    uvstr = c(paste(uv, collapse = " "))
-    uvl = list(uv)
-    for(i in 1:length(uv)){
-      uvi = c()
-      for(ui in 1:length(uv)){
-        chari = uv[ui]
+    uvstr <- c(paste(uv, collapse = " ")); uvl <- list(uv)
+    for(i in seq(length(uv))){
+      uvi <- c()
+      for(ui in seq(length(uv))){
+        chari <- uv[ui]
         if(ui <= i){
           if(nchar(chari)>1){
-            ssi = paste0(toupper(substr(chari, 1, 1)),
+            ssi <- paste0(toupper(substr(chari, 1, 1)),
                          substr(chari, 2, nchar(chari)))
           } else{
-            ssi = paste0(toupper(substr(chari, 1, 1)))
+            ssi <- paste0(toupper(substr(chari, 1, 1)))
           }
         }
-        else{
-          ssi = chari
-        }
-        uvi = c(uvi, ssi)
-      }
-      uvl[[length(uvl)+1]] = uvi
+        else{ssi <- chari}
+        uvi <- c(uvi, ssi)
+      }; uvl[[length(uvl)+1]] <- uvi
     }
     # append to new str
     for(si in 1:length(uvl)){
-      s = uvl[[si]]
+      s <- uvl[[si]]
       if(length(uv) > 1){
         if(!si==1){
           # space sep
-          rs = paste(c(rs, paste0(".*", paste(s, collapse = " "), ".*")), collapse = "|")
+          rs <- paste(c(rs, paste0(".*", paste(s, collapse = " "), ".*")), collapse = "|")
         }
         # underline sep
-        rs = paste(c(rs, paste0(".*", paste(s, collapse = "_"), ".*")), collapse = "|")
+        rs <- paste(c(rs, paste0(".*", paste(s, collapse = "_"), ".*")), collapse = "|")
         # dash sep
-        rs = paste(c(rs, paste0(".*", paste(s, collapse = "-"), ".*")), collapse = "|")
+        rs <- paste(c(rs, paste0(".*", paste(s, collapse = "-"), ".*")), collapse = "|")
       } else{
         if(!si==1){
-          rs = paste(c(rs, paste0(".*", s, ".*")), collapse = "|")
+          rs <- paste(c(rs, paste0(".*", s, ".*")), collapse = "|")
         }
       }
     }
@@ -104,53 +98,41 @@ get_pstr_neg <- function(pstr){
 #' string or vector of such character strings. 
 #'
 #' @param v Character string or vector of such strings.
-#' @param m Metadata used for pattern matching (data.frame).
+#' @param m Preprocessed metadata used for pattern matching/lookups (data.frame, mdpre).
 #' @param filtrel Logical symbol joining each regex pattern (default "|").
-#' @param nfilt Whether to also use negative lookup
-#' @param ntfilt Specific character strings of terms to filter on, or for which
-#' to use the negative lookup/regex negation (default "").
-#' @param ptfilt Additional positive/affirmative match terms to filter (default "").
+#' @param ntfilt Regex pattern corresponding to negative lookup filter (default NULL).
+#' @param ptfilt Regex pattern corresponding to positive lookup filter (default NULL).
 #' @returns The result of assessing a regex match on a metadata variable.
 #' @seealso appendvar
 #' @export
-get_filt <- function(v, m = md, filtrel = "|", nfilt = FALSE, ntfilt = "", ptfilt = "",
+get_filt <- function(v, m = mdpre, filtrel = "|", ntfilt = NULL, ptfilt = NULL,
                      varl = c("gsm_title", "sample_type", "disease_state", 
                               "anatomic_location", "misc")){
-  if(!filtrel %in% c("|", "&")){
-    message("Please provide a valid filter relation symbol.")
-    return(NULL)
+  # positive lookup filter
+  filtl <- grepl(v, m[,varl[1]])
+  if(!is.null(ptfilt)){
+    message("Using positive lookup filter with ptfilt: ", ptfilt)
+    filtl <- filtl & grepl(get_pstr(ptfilt), m[,varl[1]])
   }
-  # positive match filter
-  if(ptfilt == ""){
-    filtl = grepl(v, m[,colnames(m)==varl[1]])
-  } else{
-    filtl = grepl(get_pst(ptfilt), m[,colnames(m)==varl[1]])
-    filtl = grepl(v, m[,colnames(m)==varl[1]])
-  }
-  # negative match filter
-  if(nfilt){
-    message("Using negative lookup/exclusion filter...")
-    nfiltv = get_pstr_neg(v)
-    filtl = filtl & !grepl(nfiltv, m[,colnames(m)==varl[1]])
-  }
-  # term filter
-  if(!ntfilt == ""){
-    message("Using term lookup filter...")
-    filtl = filtl & !grepl(get_pstr(ntfilt), m[,colnames(m)==varl[1]])
+  # negative lookup filter
+  if(!is.null(ntfilt)){
+    message("Using negative lookup filter with ntfilt: ", ntfilt)
+    nfiltv <- get_pstr_neg(ntfilt)
+    filtl <- filtl & !grepl(nfiltv, m[,varl[1]])
   }
   # proceed if additional vars specified
   if(length(varl)>1){
-    for(vi in varl[2:length(varl)]){
-      if(filtrel == "|"){
-        filtl = filtl | grepl(v, m[,colnames(m)==vi])
-        if(nfilt){
-          filtl = filtl & !grepl(nfiltv, m[,colnames(m)==vi])
-        }
-      }
-      if(filtrel == "&"){
-        filtl = filtl | grepl(v, m[,colnames(m)==vi])
-        if(nfilt){
-          filtl = filtl & !grepl(nfiltv, m[,colnames(m)==vi])
+    if(!filtrel %in% c("|", "&")){
+      message("Please provide a valid filter relation symbol.")
+      return(NULL)
+    } else{
+      for(vi in varl[2:length(varl)]){
+        if(filtrel == "|"){
+          filtl <- filtl | grepl(v, m[,vi])
+          if(!is.null(ntfilt)){filtl <- filtl & !grepl(nfiltv, m[,vi])}
+        } else if(filtrel == "&"){
+          filtl <- filtl & grepl(v, m[,vi])
+          if(!is.null(ntfilt)){filtl <- filtl & !grepl(nfiltv, m[,vi])}
         }
       }
     }
@@ -163,23 +145,26 @@ get_filt <- function(v, m = md, filtrel = "|", nfilt = FALSE, ntfilt = "", ptfil
 #' Appends new variable data to a metadata variable, preserving current
 #' variable terms.
 #'
-#' @param var The variable in the metadata to assess.
-#' @param val Character string for regex matching.
-#' @param filtv Vector of character strings to filter on.
-#' @param m Metadata for term lookup (data.frame).
-#' @returns The result of assessing a regex match on a metadata variable.
+#' @param var Variable in m for which to append new terms.
+#' @param val Character string to append to matched samples.
+#' @param filtv Vector of boolean values identifying samples for which to
+#'  append the new term.
+#' @param m The postprocessed metadata for which to append the new terms
+#'  (data.frame, mdpost).
+#' @returns The result of appending new terms to specified var.
 #' @seealso get_filt, get_pstr_neg, get_pstr
 #' @export
-appendvar <- function(var, val, filtv, m){
-  varr = m[, colnames(m) == var]
+appendvar <- function(var, val, filtv, m = mdpost){
+  varr <- m[, var]
   # get composite filter
-  filti = !grepl(paste0("(^|;)", val, "(;|$)"), varr); compfilt = filti & filtv
+  filti <- !grepl(paste0("(^|;)", val, "(;|$)"), varr)
+  compfilt <- filti & filtv
   # assess filter results
   if(length(compfilt[compfilt]) == 0){
     message("No unique values to append. Returning var unchanged.")
     return(varr)
   } else{
-    varr[compfilt] = ifelse(varr[compfilt] == "NA", val,
+    varr[compfilt] <- ifelse(varr[compfilt] == "NA", val,
                             paste(varr[compfilt], val, sep = ";")
     )
     message("Appended n = ", length(varr[compfilt]), " values")

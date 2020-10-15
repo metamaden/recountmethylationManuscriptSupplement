@@ -9,23 +9,21 @@ require(rjson)
 #-------------
 # specify path
 #-------------
-sfp <- "gsm_json_filt"
-lf <- list.files(sfp)
-lff <- lf[grepl(".*\\.json\\.filt$",lf)]
+dir <- "gsm_json"; dpath <- file.path("recount-methylation-files", dir)
+lf <- list.files(dpath); ffilt <- grepl(".*\\.json\\.filt$", lf)
+lff <- lf[ffilt]
 
 #------------------
 # get sample titles
 #------------------
-gsmtitledf <- data.frame(matrix(c("", ""), nrow=0, ncol=2))
-for(j in 1:length(lff)){
-  gsm.id <- gsub("\\..*","",lff[j])
-  json.lines <- readLines(paste0(sfp, "/", lff[j]))
+gsmtitledf <- matrix(nrow = 0, ncol = 2)
+for(jf in lff){
+  jsym <- unlist(strsplit(jf, "\\.")); gsm.id <- jsym[2]
+  json.lines <- readLines(file.path(dpath, jf))
   json.convert <- fromJSON(paste(json.lines,collapse="")) 
   st.catch <- as.character(unlist(json.convert)["!Sample_title"])
-  stm <- matrix(c(gsm.id, st.catch), nrow=1, ncol=2)
-  df.gsm <- as.data.frame(stm, stringsAsFactors = FALSE)
-  gsmtitledf <- rbind(gsmtitledf, df.gsm)
-  message(j)
+  stm <- matrix(c(gsm.id, st.catch), nrow=1)
+  gsmtitledf <- rbind(gsmtitledf, stm)
 }
 colnames(gsmtitledf) <- c("gsm", "gsm_title")
 

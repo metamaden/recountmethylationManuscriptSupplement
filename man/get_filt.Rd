@@ -6,27 +6,23 @@
 \usage{
 get_filt(
   v,
-  m = md,
+  m = mdpre,
   filtrel = "|",
-  nfilt = FALSE,
-  ntfilt = "",
-  ptfilt = "",
+  ntfilt = NULL,
+  ptfilt = NULL,
   varl = c("gsm_title", "sample_type", "disease_state", "anatomic_location", "misc")
 )
 }
 \arguments{
 \item{v}{Character string or vector of such strings.}
 
-\item{m}{Metadata used for pattern matching (data.frame).}
+\item{m}{Preprocessed metadata used for pattern matching/lookups (data.frame, mdpre).}
 
 \item{filtrel}{Logical symbol joining each regex pattern (default "|").}
 
-\item{nfilt}{Whether to also use negative lookup}
+\item{ntfilt}{Regex pattern corresponding to negative lookup filter (default NULL).}
 
-\item{ntfilt}{Specific character strings of terms to filter on, or for which
-to use the negative lookup/regex negation (default "").}
-
-\item{ptfilt}{Additional positive/affirmative match terms to filter (default "").}
+\item{ptfilt}{Regex pattern corresponding to positive lookup filter (default NULL).}
 }
 \value{
 The result of assessing a regex match on a metadata variable.
