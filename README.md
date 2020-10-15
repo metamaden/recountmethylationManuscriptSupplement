@@ -1,5 +1,7 @@
 # recountmethylationManuscriptSupplement
 
+[![DOI](https://zenodo.org/badge/302553109.svg)](https://zenodo.org/badge/latestdoi/302553109)
+
 This repo contains supplemental methods, data, code, and scripts for the manuscript "Human methylome variation across Infinium 450K data on the Gene Expression Omnibus."
 
 ## Install as an R package
