@@ -7,9 +7,9 @@
 match1to2(d1, d2, ci1 = 2, ci2 = 1)
 }
 \arguments{
-\item{d1}{First dataset to combine}
+\item{d1}{First set to combine (matrix).}
 
-\item{d2}{Second dataset to combine}
+\item{d2}{Second set to combine (matrix).}
 
 \item{ci1}{Column index in first dataset to match on}
 

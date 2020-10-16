@@ -27,15 +27,13 @@ pkgname <- "recountmethylationManuscriptSupplement"
 metadata.dir <- system.file("extdata", "metadata", package = pkgname)
 # load preprocessed metadata
 mdpre.fn <- "md_preprocess.rda"
-mdpre <- get(load(file.path(metadata.dir, md.fn)))
+mdpre <- get(load(file.path(metadata.dir, mdpre.fn)))
 
 #---------------------------------
 # start new postprocessed metadata
 #---------------------------------
 mdpost <- mdpre[,c("gsm", "gse", "gsm_title")]
-mdpost$sampletype <- mdpost$tissue <- mdpost$disease <- "NA"
-mdpost$arrayid_full <- paste0(mdpre$array_id, "_", mdpre$sentrix_id)
-mdpost$basename <- mdpre$basename
+mdpost$tissue <- mdpost$disease <- "NA"
 
 #---------------
 # disease status
@@ -723,17 +721,17 @@ mdpost$tissue <- appendvar("tissue", "visceral", get_filt(get_pstr(ssv)))
 # age, inc. units
 #----------------
 # mine age info from mdpre
-xt <- as.data.frame(table(unlist(strsplit(md$misc,";"))))
+xt <- as.data.frame(table(unlist(strsplit(mdpre$misc,";"))))
 xt <- xt[rev(order(xt[,2])),]
 aiterms <- xt[grepl(".*age_info.*", xt[,1]), 1]
-agedat <- md$age
+agedat <- mdpre$age
 # format mined age
-af <- md$age # original value
+af <- mdpre$age # original value
 aqvar <- "age_info"
 af <- gsub("\\..*", "", gsub(" ", "", gsub(aqvar, "", af))) # rm units, spaces, decimals
 af <- ifelse(nchar(af) > 2 | nchar(af) == 0, "NA", af) # filter invalid entries
 # get mined ids and filt na
-miscdat <- md$misc; mdst = rep("", nrow(md))
+miscdat <- mdpre$misc; mdst <- rep("", nrow(mdpre))
 whichaa <- which(grepl(".*age_info.*", miscdat))
 ayr <- c("year", "yr", "y"); ady <- "day"
 amo <- c("month"); awk <- c("week", "wk")
@@ -741,26 +739,24 @@ aqvar <- get_pstr(c(ayr, ady, amo, awk))
 aqyr <- get_pstr(ayr); aqdy <- get_pstr(ady)
 aqmo <- get_pstr(amo); aqwk <- get_pstr(awk)
 for(i in whichaa){
-  aii = "NA"
-  aui = "NA"
-  sai = gsub(";.*", "", gsub(".*(|^;)age_info:", "", miscdat[i]))
+  aii <- "NA"; aui = "NA"
+  sai <- gsub(";.*", "", gsub(".*(|^;)age_info:", "", miscdat[i]))
   if(grepl(aqvar, sai)){
-    auval = ifelse(grepl(aqyr, sai), "years",
+    auval <- ifelse(grepl(aqyr, sai), "years",
                    ifelse(grepl(aqdy, sai), "days",
                           ifelse(grepl(aqmo, sai), "months",
                                  ifelse(grepl(aqwk, sai), "weeks", "NA"))))
     
   } else{
-    sai = agedat[i]
+    sai <- agedat[i]
     if(grepl(aqvar, sai)){
-      auval = ifelse(grepl(aqyr, sai), "years",
+      auval <- ifelse(grepl(aqyr, sai), "years",
                      ifelse(grepl(aqdy, sai), "days",
                             ifelse(grepl(aqmo, sai), "months",
                                    ifelse(grepl(aqwk, sai), "weeks", "NA"))))
     }
   }
-  aui = paste0("unitm:", auval)
-  mdst[i] = aui
+  aui <- paste0("unitm:", auval); mdst[i] = aui
   message(i)
 }
 # add mined info as 'infom'
@@ -778,14 +774,9 @@ for(i in whichinfo){
                                  ifelse(grepl(ipr, di), paste0(vstr, "prepubescent"), ""))))
 }
 # export for predage inference
-mdage <- mdpost
-mdage$age <- paste0("valm:", gsub(" ", "", af))
-mdage$age <- ifelse(!mdst=="", paste(mdage$age, mdst, sep = ";"), mdage$age)
-mdage$age <- ifelse(!mdsi == "", paste(mdage$age, mdsi, sep = ";"), mdage$age)
-mdage$predage <- md$predage
-# append new age data
-mdpost$age <- mdage$age
-mdpost$predage <- round(as.numeric(as.character(md$predage)), digits = 2)
+mdpost$age <- paste0("valm:", gsub(" ", "", af))
+mdpost$age <- ifelse(!mdst=="", paste(mdpost$age, mdst, sep = ";"), mdpost$age)
+mdpost$age <- ifelse(!mdsi == "", paste(mdpost$age, mdsi, sep = ";"), mdpost$age)
 
 #--------------
 # sex variables
@@ -799,21 +790,10 @@ mdpost$disease <- appendvar("disease", "klinefelter_syndrome", dfilt)
 mdpost$sex <- ifelse(grepl(get_pstr(c("female", "f", "FEMALE")), md$gender), "F",
                     ifelse(grepl(get_pstr(c("male", "MALE", "m")), md$gender),
                            "M", "NA"))
-mdpost$predsex <- md$predsex
-
-#------------------------------
-# predicted cell type fractions
-#------------------------------
-cncellcomp <- colnames(md)[grepl(".*predcell.*", colnames(md))]
-for(clp in cncellcomp){
-  cn <- colnames(mdpost)
-  mdpost <- cbind(mdpost, round(as.numeric(md[,clp]), digits = 2))
-  colnames(mdpost) <- c(cn, clp)
-}
 
 #-----
 # Save
 #-----
-mdfn <- "md-postprocess"
+mdfn <- "md_postprocess"
 save(mdpost, file = paste0(mdfn, ".rda"))
 write.csv(mdpost, file = paste0(mdfn, ".csv"))
