@@ -33,6 +33,8 @@ compilations and sample metadata. http://bioconductor.org/packages/devel/bioc/ht
 
 * recountmethylationManuscriptSupplement -- GitHub repo for manuscript supplemental files, scripts, and data. https://github.com/metamaden/recountmethylationManuscriptSupplement
 
+* figshare project -- Supplmental files, metadata, and DOIs for the manuscript https://figshare.com/account/home
+
 *  recount.bio/data -- Location of large supplemental data files. https://recount.bio/data/recountmethylation_manuscript_supplement/
 
 * `recount-methylation-server` -- Server software for identifying, downloading, and managing IDATs and SOFT files. https://github.com/metamaden/recount-methylation-server
