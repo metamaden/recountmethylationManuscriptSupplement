@@ -31,10 +31,10 @@ md <- read.csv(file.path(tables.dir, tname), header = TRUE)
 # specify index blocks for processes
 blocks <- getblocks(slength = ncol(rgset), bsize = 50)
 # get quality metrics for each index block
-ms <- matrix(nrow = 0, ncol = 19)
+ms <- matrix(nrow = 0, ncol = 20)
 cdf <- as.data.frame(getProbeInfo(rgset, type = "Control"))
-for(i in 1:length(blocks)){
-  b <- blocks[[i]]; rgf <- rgset[, b]
+for(b in blocks){
+  rgf <- rgset[, b]; colnames(rgf) <- gsub("\\..*", "", colnames(rgf))
   # beadarray control signals
   redsignal <- getRed(rgf); greensignal <- getGreen(rgf)
   basignals <- bactrl(rs = t(redsignal), gs = t(greensignal), cdf = cdf)
@@ -42,17 +42,12 @@ for(i in 1:length(blocks)){
   mset <- preprocessRaw(rgf)
   ms <- getMeth(mset); meth.l2med <- apply(ms, 2, function(x){log2(median(x))})
   us <- getUnmeth(mset); unmeth.l2med <- apply(us, 2, function(x){log2(median(x))})
-  # get pvalues and cutoffs
-  #pvals <- minfi::detectionP(rgf)
-  #detp.001 <- apply(pvals, 2, function(x){length(x[x > 0.01])})
-  #detp.05 <- apply(pvals, 2, function(x){length(x[x > 0.05])})
-  #detp.01 <- apply(pvals, 2, function(x){length(x[x > 0.1])})
+  # bind qc signals
   mi <- cbind(basignals, 
               data.frame(meth.l2med = meth.l2med, 
                          unmeth.l2med = unmeth.l2med,
                          stringsAsFactors = FALSE))
   ms <- rbind(ms, mi)
-  message(i)
 }
 
 #-------------------------------------
@@ -63,19 +58,21 @@ snp1.info <- getProbeInfo(rgset, type = "SnpI")
 snp2.info <- getProbeInfo(rgset, type = "SnpII")
 snp.addr <- c(snp1.info$AddressA, snp1.info$AddressB, snp2.info$AddressA)
 beta.snp <- getSnpBeta(rgset)
+colnames(beta.snp) <- gsub("\\..*", "", colnames(beta.snp))
 # determine likely replicates by study id
 athresh <- 0.1 # minimum probability
+ama = matrix(nrow = 0, ncol = 3) # main identity matrix
+colnames(ama) <- c("gsm", "gseid", "cgsnp.gsm.geno")
 for(id in unique(md$gseid)){
  gsmv <- md[md$gseid == id,]$gsm
- sbi <- beta.snp[, colnames(beta.snp) %in% gsmv, drop = F]
- sgenoi <- call_genotypes(sbi, learn = F)
+ sbi <- beta.snp[, colnames(beta.snp) %in% gsmv, drop = FALSE]
+ sbi <- as.matrix(sbi); class(sbi) <- "numeric"
+ sgenoi <- call_genotypes(sbi, learn = FALSE)
  sagree <- check_snp_agreement(sgenoi, donor_ids = colnames(sbi), 
                                sample_ids = colnames(sbi))
- ama = matrix(nrow = 0, ncol = 3)
- colnames(ama) <- c("gsm", "gseid", "cgsnp.gsm.geno")
  for(sai in sagree){
-   am = data.frame(gsm = unique(c(sai$sample1, sai$sample2)), 
-                   stringsAsFactors = F)
+   am <- data.frame(gsm = unique(c(sai$sample1, sai$sample2)), 
+                   stringsAsFactors = FALSE)
    am$gseid <- id; am$gsm.geno <- "NA"
    for(gsm in am$gsm){
      sai.cond <- (sai$sample1==gsm | sai$sample2==gsm) & 
@@ -86,34 +83,24 @@ for(id in unique(md$gseid)){
    }
    ama <- rbind(ama, am)
  }
+ message("finished study ", id)
 }
-# append number of replicates
+# append replicates count
 ama$num.shared <- unlist(lapply(ama$gsm.geno, function(x){
   length(unique(unlist(strsplit(x, ";"))))
 }))
 
-#---------------
-# make new table
-#---------------
-# ba signals
-mdf <- md[md$gsm %in% basignals$gsm,]
-mdf <- mdf[order(match(mdf$gsm, basignals$gsm)),]
-identical(mdf$gsm, basignals$gsm)
-qcmd <- data.frame(gsm = basignals$gsm, gseid = mdf$gseid)
-qcmd <- cbind(qcmd, basignals[,c(2:18)])
-colnames(qcmd)[3:19] <- paste0("ba.", colnames(qcmd)[3:19])
-# mu log2 medians
-meth.l2med <- meth.l2med[order(match(names(meth.l2med), qcmd$gsm))]
-unmeth.l2med <- unmeth.l2med[order(match(names(unmeth.l2med), qcmd$gsm))]
-qcmd$meth.l2med <- meth.l2med
-qcmd$unmeth.l2med <- unmeth.l2med
-# replicate calls
+# append replicates info
+qcmd <- ms
+ama <- ama[ama$gsm %in% qcmd$gsm,]
 ama <- ama[order(match(ama$gsm, qcmd$gsm)),]
-qcmd$cgsnp.gsm.geno <- ama$gsm.geno
-qcmd$cgsnp.nshared <- ama$num.shared
+if(identical(ama$gsm, qcmd$gsm)){
+  qcmd$cgsnp.gsm.geno <- ama$gsm.geno
+  qcmd$cgsnp.nshared <- ama$num.shared
+} else{stop("error matching gsm ids for qcmd, ama...")}
 
 #----------------
 # write new table
 #----------------
-#tname <- "table-s2_qcmd-allgsm.csv"
-#write.table(tname, sep = ",")
+tname <- "table-s2_qcmd-allgsm.csv"
+write.csv(qcmd, file = tname)
