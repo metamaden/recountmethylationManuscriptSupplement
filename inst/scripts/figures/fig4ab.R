@@ -9,46 +9,40 @@ library(ggplot2)
 #----------
 # load data
 #----------
-#txfiltl <- get(load(txfiltl.name))
-#txnames = names(txfiltl)
 pkgname <- "recountmethylationManuscriptSupplement"
 nct7.dir <- system.file("extdata", "nct7", package = pkgname) 
-# fn <- "lfilt_highvar-nc7.rda"
-lfn <- "lfilt_cgtables_nct.rda"
-txfiltl <- get(load(file.path(nct7.dir, lfn)))
-
-ldfn <- "listdat-top1kmvp-tx_abs-bin_7nct.rda"
-txfiltl <- get(load(file.path(nct7.dir, ldfn)))
+tx.fn <- "ltxfilt-dnamsummary_highvar_nct7.rda"
+txfiltl <- get(load(file.path(nct7.dir, tx.fn)))
 txnames <- names(txfiltl)
 
 #-----------------------
 # prep the plot datasets
 #-----------------------
-bpdf.mean = matrix(nrow = 0, ncol = 3)
-bpdf.var = matrix(nrow = 0, ncol = 3)
+bpdf.mean <- matrix(nrow = 0, ncol = 3)
+bpdf.var <- matrix(nrow = 0, ncol = 3)
 
 # tx colors
-tl = c("blood", "buccal", "brain", "sperm", "nasal", "adipose", "liver" ) # index
-tc = c("red", "orange", "purple", "blue", "green", "brown", "forestgreen") # color
+tl <- c("blood", "buccal", "brain", "sperm", "nasal", "adipose", "liver" ) # index
+tc <- c("red", "orange", "purple", "blue", "green", "brown", "forestgreen") # color
 
 # get summaries by tissue
 for(t in 1:length(txnames)){
-  tx = txnames[t]; datt = txfiltl[[tx]]
-  bpdf.mean = rbind(bpdf.mean, data.frame(datt$mean, tc[tl == tx], tx, stringsAsFactors = F))
-  bpdf.var = rbind(bpdf.var, data.frame(datt$var, tc[tl == tx], tx, stringsAsFactors = F))
+  tx <- txnames[t]; datt <- txfiltl[[tx]]
+  bpdf.mean <- rbind(bpdf.mean, data.frame(datt$mean, tc[tl == tx], tx, stringsAsFactors = F))
+  bpdf.var <- rbind(bpdf.var, data.frame(datt$var, tc[tl == tx], tx, stringsAsFactors = F))
 }
 
 # format plot data
-bpdf.mean = as.data.frame(bpdf.mean, stringsAsFactors = F)
-bpdf.var = as.data.frame(bpdf.var, stringsAsFactors = F)
-bpdf.mean[,1] = as.numeric(as.character(bpdf.mean[,1]))
-bpdf.var[,1] = as.numeric(as.character(bpdf.var[,1]))
-colnames(bpdf.mean) = c("mean", "col", "tissue")
-colnames(bpdf.var) = c("var", "col", "tissue")
-bpdf.mean$tissue = factor(bpdf.mean$tissue, levels = unique(bpdf.mean$tissue))
-ordert = order(match(tl, levels(bpdf.mean$tissue)))
-bpdf.var$tissue = factor(bpdf.var$tissue, levels = unique(bpdf.var$tissue))
-ordert = order(match(tl, levels(bpdf.var$tissue)))
+bpdf.mean <- as.data.frame(bpdf.mean, stringsAsFactors = F)
+bpdf.var <- as.data.frame(bpdf.var, stringsAsFactors = F)
+bpdf.mean[,1] <- as.numeric(as.character(bpdf.mean[,1]))
+bpdf.var[,1] <- as.numeric(as.character(bpdf.var[,1]))
+colnames(bpdf.mean) <- c("mean", "col", "tissue")
+colnames(bpdf.var) <- c("var", "col", "tissue")
+bpdf.mean$tissue <- factor(bpdf.mean$tissue, levels = unique(bpdf.mean$tissue))
+ordert <- order(match(tl, levels(bpdf.mean$tissue)))
+bpdf.var$tissue <- factor(bpdf.var$tissue, levels = unique(bpdf.var$tissue))
+ordert <- order(match(tl, levels(bpdf.var$tissue)))
 
 #-------------------
 # make plot objects

@@ -77,6 +77,12 @@ See data analyses vignette in [`recountmethylation`](https://bioconductor.org/pa
 
 ## 2C Percent BeadArray control failure, by storage condition
 
+```{r, eval = TRUE}
+script.name <- "fig2c.R"
+source(file.path(scripts.dir, script.name))
+fig2c
+```
+
 ## 2D Study-level quality assessments
 
 ```{r, eval = TRUE}
@@ -166,5 +172,5 @@ noncancer tissues.
 
 ```{r, eval = TRUE}
 script.name <- "fig4c.R"
-source(file.path(scripts.dir, script.name))
+suppressMessages(source(file.path(scripts.dir, script.name)))
 ```

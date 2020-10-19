@@ -12,7 +12,7 @@ library(minfiData)
 pkgname <- "recountmethylationManuscriptSupplement"
 tables.dir <- system.file("extdata", "tables", package = pkgname)
 nct7.dir <- system.file("extdata", "nct7", package = pkgname)
-ldfn <- "listdat-top1kmvp-tx_abs-bin_7nct.rda"
+ldfn <- "ltxfilt-dnamsummary_highvar_nct7.rda"
 txfiltl <- get(load(file.path(nct7.dir, ldfn)))
 txnames <- names(txfiltl)
 
@@ -67,10 +67,10 @@ bpdf$Tissue <- factor(bpdf$Tissue, levels=txnames)
 
 # get compact label from region var
 bpdf$label <- "NA"
-bpdf[bpdf$`Genomic Region` == "interisland_intergenic",]$label <- "Osea;Nogene"
-bpdf[bpdf$`Genomic Region` == "interisland_intragenic",]$label <- "Osea;Gene"
-bpdf[bpdf$`Genomic Region` == "intraisland_intergenic",]$label <- "Isld;Nogene"
-bpdf[bpdf$`Genomic Region` == "intraisland_intragenic",]$label <- "Isld;Gene"
+bpdf[bpdf$`Genomic Region` == "interisland_intergenic",]$label <- "opensea"
+bpdf[bpdf$`Genomic Region` == "interisland_intragenic",]$label <- "opensea;intragenic"
+bpdf[bpdf$`Genomic Region` == "intraisland_intergenic",]$label <- "island"
+bpdf[bpdf$`Genomic Region` == "intraisland_intragenic",]$label <- "island;intragenic"
 
 # new plot, compact legend format
 p1 <- ggplot(bpdf, aes(x = Tissue, y = Count, fill = label)) +
@@ -97,11 +97,7 @@ colnames(bpdf) <- c("Gene Region", "Count", "Tissue")
 bpdf$Tissue <- factor(bpdf$Tissue, levels=txnames)
 
 # new compact label from region var
-bpdf$label <- "NA"
-bpdf[bpdf$`Gene Region` == "body",]$label <- "Body"
-bpdf[bpdf$`Gene Region` == "promoter",]$label <- "Prom"
-bpdf[bpdf$`Gene Region` == "intergenic",]$label <- "Nogene"
-bpdf[bpdf$`Gene Region` == "promoter;body",]$label <- "Prom;Body"
+bpdf$label <- bpdf$`Gene Region`
 
 # new plot with compact legend
 p2 <- ggplot(bpdf, aes(x = Tissue, y = Count, fill = label)) +
@@ -129,13 +125,9 @@ colnames(bpdf) <- c("Island Region", "Count", "Tissue")
 bpdf$Tissue <- factor(bpdf$Tissue, levels=txnames)
 
 # new compact label from region var
-bpdf$label <- "NA"
-bpdf[bpdf$`Island Region` == "OpenSea",]$label <- "OSea"
-bpdf[bpdf$`Island Region` == "Island",]$label <- "Isld"
-bpdf[bpdf$`Island Region` == "N_Shelf",]$label <- "Nshl"
-bpdf[bpdf$`Island Region` == "N_Shore",]$label <- "Nshr"
-bpdf[bpdf$`Island Region` == "S_Shelf",]$label <- "Sshl"
-bpdf[bpdf$`Island Region` == "S_Shore",]$label <- "Sshr"
+bpdf$label <- tolower(bpdf$`Island Region`)
+bpdf[bpdf$`Island Region` %in% c("N_Shelf", "S_Shelf"),]$label <- "shelf"
+bpdf[bpdf$`Island Region` %in% c("N_Shore", "S_Shore"),]$label <- "shore"
 
 # new plot with compact legend
 p3 <- ggplot(bpdf, aes(x = Tissue, y = Count, fill = label)) +
