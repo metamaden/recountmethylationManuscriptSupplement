@@ -28,24 +28,32 @@ md <- read.csv(file.path(tables.dir, tname), header = TRUE)
 #---------------------
 # get quality controls
 #---------------------
-# beadarray control signals
-rg <- getRed(rgset)
-gg <- getGreen(rgset)
+# specify index blocks for processes
+blocks <- getblocks(slength = ncol(rgset), bsize = 50)
+# get quality metrics for each index block
+ms <- matrix(nrow = 0, ncol = 19)
 cdf <- as.data.frame(getProbeInfo(rgset, type = "Control"))
-basignals <- bactrl(rs = t(rg), gs = t(gg), cdf = cdf)
-
-# get log2 medians m/u signals
-mset <- preprocessRaw(rgset)
-ms <- getMeth(mset)
-us <- getUnmeth(mset)
-meth.l2med <- apply(ms, 2, function(x){log2(median(x))})
-unmeth.l2med <- apply(us, 2, function(x){log2(median(x))})
-
-# get pvalues and cutoffs
-pvals <- minfi::detectionP(rgset)
-detp.001 <- apply(pvals, 2, function(x){length(x[x > 0.01])})
-detp.05 <- apply(pvals, 2, function(x){length(x[x > 0.05])})
-detp.01 <- apply(pvals, 2, function(x){length(x[x > 0.1])})
+for(i in 1:length(blocks)){
+  b <- blocks[[i]]; rgf <- rgset[, b]
+  # beadarray control signals
+  redsignal <- getRed(rgf); greensignal <- getGreen(rgf)
+  basignals <- bactrl(rs = t(redsignal), gs = t(greensignal), cdf = cdf)
+  # get log2 medians m/u signals
+  mset <- preprocessRaw(rgf)
+  ms <- getMeth(mset); meth.l2med <- apply(ms, 2, function(x){log2(median(x))})
+  us <- getUnmeth(mset); unmeth.l2med <- apply(us, 2, function(x){log2(median(x))})
+  # get pvalues and cutoffs
+  #pvals <- minfi::detectionP(rgf)
+  #detp.001 <- apply(pvals, 2, function(x){length(x[x > 0.01])})
+  #detp.05 <- apply(pvals, 2, function(x){length(x[x > 0.05])})
+  #detp.01 <- apply(pvals, 2, function(x){length(x[x > 0.1])})
+  mi <- cbind(basignals, 
+              data.frame(meth.l2med = meth.l2med, 
+                         unmeth.l2med = unmeth.l2med,
+                         stringsAsFactors = FALSE))
+  ms <- rbind(ms, mi)
+  message(i)
+}
 
 #-------------------------------------
 # detecting replicates from genotypes
@@ -53,8 +61,7 @@ detp.01 <- apply(pvals, 2, function(x){length(x[x > 0.1])})
 # get snp dnam
 snp1.info <- getProbeInfo(rgset, type = "SnpI")
 snp2.info <- getProbeInfo(rgset, type = "SnpII")
-snp.addr <- c(snp1.info$AddressA, snp1.info$AddressB,
-              snp2.info$AddressA)
+snp.addr <- c(snp1.info$AddressA, snp1.info$AddressB, snp2.info$AddressA)
 beta.snp <- getSnpBeta(rgset)
 # determine likely replicates by study id
 athresh <- 0.1 # minimum probability
