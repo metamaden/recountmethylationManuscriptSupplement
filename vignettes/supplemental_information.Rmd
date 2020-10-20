@@ -243,26 +243,12 @@ R, `ggplot2` (v.3.1.0), or `ComplexHeatmap` (v.1.99.5).
 ## Autosomal DNAm principal component analyses (PCAs)
 
 Approximate array-wide PCA was performed using noob-normalized Beta-values from autosomal 
-probes and teh `prcomp` from the `stats` R package. We condensed autosomal DNAm across 
-35,360 samples into 1,000 hashed feature columns, then used this reduced representation 
-(1,000 rows X 35,360 columns) in cluster analysis. Feature hashing, or the 
-"hashing trick" (@weinberger_feature_2010), was used as an intermediate dimensionality 
-reduction step. The data files for each performed test are available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/. 
-
-To perform feature hashing, we used the following script in Python 3, where `target_dim=1000` 
-specifies the target hashed feature dimension:
-
-```
-def feature_hash(arr, target_dim=1000):
-    low_d_rep = [0 for _ in range(target_dim)]
-    for i, el in enumerate(arr):
-        hashed = mmh3.hash(str(i))
-        if hashed > 0:
-            low_d_rep[hashed % target_dim] += arr[i]
-        else:
-            low_d_rep[hashed % target_dim] -= arr[i]
-    return low_d_rep
-```
+probes and teh `prcomp` from the `stats` R package. Feature hashing, or the "hashing trick" 
+(@weinberger_feature_2010), was used as an intermediate dimensionality reduction step. We 
+projected autosomal DNAm from 35,360 samples into 1,000 hashed features, then used this 
+reduced representation (1,000 rows X 35,360 columns) in cluster analysis. This was performed 
+using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/python/dnamhash.py.
+The hashed feature datasets are available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/. 
 
 ## Predicted and mined ages concordances
 
