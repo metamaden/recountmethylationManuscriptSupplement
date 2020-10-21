@@ -7,14 +7,14 @@ author:
 - Kasper D. Hansen
 - Abhinav Nellore
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  html_notebook: default
   html_document:
     df_print: paged
     toc: yes
     toc_depth: 2
-  html_notebook: default
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
   word_document:
     toc: yes
     toc_depth: '2'
@@ -42,6 +42,8 @@ compilations and sample metadata. http://bioconductor.org/packages/devel/bioc/ht
 
 * recountmethylationManuscriptSupplement -- GitHub repo for manuscript supplemental files, scripts, and data. https://github.com/metamaden/recountmethylationManuscriptSupplement
 
+* figshare project -- Supplemental files, metadata, and DOIs for the manuscript https://figshare.com/account/home#/projects/90758
+
 *  recount.bio/data -- Location of large supplemental data files. https://recount.bio/data/recountmethylation_manuscript_supplement/
 
 * `recount-methylation-server` -- Server software for identifying, downloading, and managing IDATs and SOFT files. https://github.com/metamaden/recount-methylation-server
@@ -55,7 +57,7 @@ DNA methylation (DNAm) array samples were identified as published to the Gene Ex
 
 ## GEO queries and data summaries
 
-The Entrez Utilities software (v.10.9) was used to quantify DNAm array sample availability by year and platform for 3 major Illumina BeadArray platforms (HM450K, HM27K, and EPIC/HM850K.
+The Entrez Utilities software (v.10.9) was used to quantify DNAm array sample availability by year and platform for 3 major Illumina BeadArray platforms (HM450K, HM27K, and EPIC/HM850K).
 
 Samples and studies were identified for download using the script  https://github.com/metamaden/recount-methylation-server/blob/master/src/edirect_query.py.
 
@@ -67,212 +69,50 @@ and https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/mai
 
 ## Data acquisition
 
-We used the Python programming language to develop a download management system to handle and version file downloads from GEO. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository.
-
-IDATs and SOFT files were acquired using the script 
-https://github.com/metamaden/recount-methylation-server/blob/master/src/dl.py.
+We used the Python programming language to develop a download management system to handle and version file downloads from GEO. We used Celery v5.0.0 to handle job management and logging. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository. IDATs and SOFT files were acquired using the script 
+https://github.com/metamaden/recount-methylation-server/blob/master/src/dl.py and download jobs were managed using the script https://github.com/metamaden/recount-methylation-server/blob/master/src/server.py
 
 ## Processing DNAm data from IDATs
 
-Signals were read from sample IDATs into an R session using the `minfi` 
-package (v.1.29.3, @aryee_minfi:_2014). DNAm assay data were read from IDATs using the script
+Signals were read from sample IDATs into an R session using the `minfi` v1.29.3 R/Bioconductor
+package [@aryee_minfi:_2014]. DNAm assay data were read from IDATs using the script
 https://github.com/metamaden/rmpipeline/blob/master/R/rmpipeline.R. 
 
-# Learning sample metadata from SOFT files
+# Sample metadata
 
-Metadata preprocessing and postprocessing was performed, resulting in the samples metadata table S1
-used for manuscript analyses (Table S1).
+Scripts for metadata processing can be found in the directory \url{https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata}
 
 ## Extracting sample/GSM metadata from GSE SOFT files in JSON format
 
-GSE SOFT files were converted to JSON format using the script 
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/soft2json.R.
-JSON files were then filtered using the script
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/jsonfilt.R.
-The filtered JSON data were then stored as a list with 
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/make_gse_annolist.R, and the list was coerced into the preprocessed metadata object using 
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/gseanno_manualharmonize.R.
+After obtaining the GSE SOFT files from GEO, we extracted GSM-specific metadata as JSON-formatted files using the script `soft2json.R`. Before further processing, we filtered the sample JSON-formatted metadata using the script `jsonfilt.R`. This step attempted to remove any GSE-specific metadata while retaining sample-identifying characteristics.
 
-## Postprocessing mined sample metadata under common variables
+## Processing the sample metadata
 
-We used term mapping with regular expressions to create the `disease` and `tissue`
-columns in the postprocessed metadata (Table S1). The preprocessed metadata table 
-(see above) was postprocessed using the script
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/md_postprocessing.R
-
-This script used regular expressions mapping, including inclusive and exclusive mapping logic, to 
-learn new terms and annotations. This mapped mined metadata into a regulated series of terms similar
-to those implemented in the marmal-aid resource. In summary, labels have general labels applied 
-automatically and separated by semicolons, and resulting labels were all lowercase, where underscores 
-replace spaces for applicable labels. For example, a label of "Peripheral blood" is converted into "peripheral_blood;blood".
+The filtered JSON metadata were read into a list of tables, organized by GSE ID, using the script `make_gse_annolist.R`. We then preprocessed these tables by moving the available metadata under 
+common variables as shown in the script `metadata_preprocessing.R`. This step was coordinated manually and 
+separately for each respective GSE ID. We additionally obtained GSM record titles from JSON files using the script `get_gsm_titles.R`. We postprocessed available metadata by mapping available data to controlled term vocabularies using the script `metadata_preprocessing.R`. Controlled vocabularies were heavily inspired by terms used by the Marmal-aid resource, and we attempted to map the most frequently available and informative metadata we observed in the original SOFT files. 
 
 ## Predicting sample types from filtered sample JSON files
 
-Filtered GSM data in JSON format were derived from GSE SOFT files (see above). Filtering removed the 
-GSE-specific data, including experiment title and methods text. This step helped distinguish metadata 
-between samples with different characteristics. For example, the filtered JSON file 
-for sample GSM937258 was:
-
-```
-[
-{
-  "!Sample_characteristics_ch1": "tissue site: Bone",
-  "!Sample_characteristics_ch1.1": "tissue type: Tumor",
-  "!Sample_characteristics_ch1.2": "sample id (short form for plotting): 24-6b",
-  "!Sample_characteristics_ch1.3": "description: Xiphoid Met",
-  "!Sample_source_name_ch1": "Prostate cancer metastasis",
-  "!Sample_title": "Prostate cancer metastasis 16032"
-}
-]
-```
-
-We ran the MetaSRA-pipeline software on the filtered JSON files 
-(@bernstein_metasra:_2017). For this, we forked the original software, and made light 
-modifications so that it ran successfully using Python 3. This fork is available at 
-https://github.com/metamaden/MetaSRA-pipeline.
-
-MetaSRA-pipeline mapped ontology term labels and made sample type predictions (Figure S2). 
-We appended the most likely sample types and their likelihoods under the "sampletype" column 
-in the postprocessed metadata. For applicable samples, cell line annotations were appended 
-from the [Cellosaurus](https://web.expasy.org/cellosaurus/) resource.
+We ran the MetaSRA-pipeline software on the filtered versions of sample JSON metadata files [@bernstein_metasra:_2017]. For this, we used a forked the original software available at \url{https://github.com/metamaden/MetaSRA-pipeline}. For each sample record, the MetaSRA-pipeline mapped a series of curated ontology terms and predicted the likelihoods for each of 6 sample type categories (Figure S2). We extracted the pipeline-mapped files into tables using the script `get_msrap_mdmap.R`. We retained the most likely predicted sample types and their likelihoods as shown in the script `make_md_final.R`.
 
 ## DNAm model-based predictions for age, sex, and blood cell types
 
-Model-based predictions of sex, age, and cell type fractions were 
-obtained from DNAm data as described in https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/metadata/metadata_model_predictions.R. 
-
-Age predictions were obtained by running the `agep` function from the `wateRmelon` (v.1.28.0) 
-package on noob-normalized Beta-value DNAm, which used the method described in Horvath 2013. 
-Sex predictions were obtained by running the `getSex` function from `minfi` 
-on red and green channel data. Cell fraction predictions were obtained by running the `estimateCellCounts` 
-function from `minfi` using red and green channel data (@houseman_dna_2012). 
-
-The `getSex` and `estimateCellCounts` functions perform light preprocessing that may 
-be influenced by input sample order. We found that repeated calculations with randomized 
-sample ordering showed > 95% concordance for both variables (data not shown).
-
-## Detailed column decriptions for postprocessed/final metadata
-
- 1. `gsm` : GEO sample record ID
-
- 2. `gsm_title` : GEO sample record title
-
- 3. `gseid` : GEO study record ID
-
- 4. `disease` : Learned disease characteristics and study group labels
-
- 5. `tissue` : Learned tissue characteristics labels
-
- 6. `sampletype` : Most likely sample type from MetaSRA-pipeline
-* `msraptype`: Sample label
-* `msrapconf`: Prediction confidence
-* `ccid`, `ccacc`, and `cccat`: Mapped cellosaurus id, accession, and 
-attribute info where available/applicable
-
-7. `arrayid_full`: Full array Sentrix ID (format: 
-`Sentrix ID`_`chip coordinate`)
-
-8. `basename`: Basename, or shared path, to sample IDAT files
-
-9. `age`: Learned chronological age and age units.
-* `valm`: Age value
-* `unitm`: Age units
-
-10. `predage`: DNAm-based age estimate, predicted using noob-normalized 
-Beta-valuees and `agep()` from the `wateRmelon` package.
-
-11. `sex`: Learned sex label (M = male, F = female).
-
-12. `predsex` : DNAm-based sex, predicted from unnormalized red and green 
-signal using `getSex()` from the `minfi` R package (M = male, F = female).
-
-13. `predcell.CD8T` : DNAm-based CD8T cell fraction prediction from 
-`estimateCellCounts()` in `minfi`.
-
-14. `predcell.CD4T` : DNAm-based CD4T cell fraction prediction from 
-`estimateCellCounts()` in `minfi`.
-
-15. `predcell.NK` : DNAm-based Natural Killer cell prediction from 
-`estimateCellCounts()` in `minfi`.
-
-16. `predcell.Bcell` : DNAm-based Bcell fraction prediction from 
-`estimateCellCounts()` in `minfi`.
-
-17. `predcell.Mono` : DNAm-based Monocyte fraction prediction from 
-`estimateCellCounts()` in `minfi`.
-
-18. `predcell.Gran` : DNAm-based Granulocyte fraction prediction from 
-`estimateCellCounts()` in `minfi`.
-
-19. `storage` : Manually annotated storage procedure (`FFPE` for formalin-fixed 
-paraffin embedded or `F` for fresh frozen).
+Model-based predictions of sex, age, and cell type fractions were obtained from DNAm data as described in `metadata_model_predictions.R`. Age predictions were obtained by running the `agep` function from the `wateRmelon` v1.28.0 package on noob-normalized DNAm Beta-values [@horvath_dna_2013]. Sex predictions were obtained by running the `getSex` function from `minfi` on genome-mapped `MethylSet` data [@aryee_minfi:_2014]. Cell fraction predictions were obtained by running the `estimateCellCounts` on `RGChannelSet`-formatted data [@houseman_dna_2012].
 
 # Quality and summary metrics
 
-We calculated quality signals for 17 BeadArray controls, methylated and
-unmethylated signals, and likely sample replicates by study, as described in
-the script https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/tables/tableS2.R
-
-BeadArray signals for 17 controls (summarized in Table S3) were calcuated using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/R/beadarray_cgctrlmetrics.R. 
-Our method was developed in consultation with Illumina's platform documentation (@noauthor_illumina_2010, @noauthor_beadarray_nodate) and functions from the `ewastools` R package (@heiss_identifying_2018).
-
-Sample genetic identities were calculated for GSE records using the `call_genotypes` and 
-`check_snp_agreement` functions from the `ewastools` package (@heiss_identifying_2018), with a
-likelihood cutoff of 0.1. This method uses a probabilistic model high-frequency SNP data 
-probed by the HM450K platform.
+We calculated quality signals for 17 BeadArray controls, methylated and unmethylated signals, and likely sample replicates by study, as described in the table script \url{tableS2.R}. BeadArray signals for 17 controls were calcuated using the script \url{beadarray_cgctrlmetrics.R} (see `?bametric` for details). Our method was developed in consultation with Illumina's platform documentation and functions from the `ewastools` R package [@noauthor_illumina_2010; @noauthor_beadarray_nodate; @heiss_identifying_2018]. Sample genetic identities were predicted using the functions `call_genotypes()` and `check_snp_agreement()` from the `ewastools` R package, which uses high-frequency SNP signals from HM450K arrays [@heiss_identifying_2018]. We predicted and recorded likely genotype-based replicates within each GSE record.
 
 # Statistical analyses
 
 ## Summary statistics and statistical tests
 
-Sample data were obtained, read, and analyzed programmatically using 
-the R (v.4.0.0) and Python (v.3.7.0) languages in a CentOS 7 remote 
-server environment. IDAT signals were read into `SummarizedExperiment` 
-objects using the `minfi` package. Summary statistics were generated 
-using base R functions. Statistical tests were performed using the 
-`stats` (v.4.0.0) R package. Correlation tests used the Spearman 
-method by setting `method = "spearman"` in the `cor.test` function. 
-Analyses of variance (ANOVAs) were performed using the `anova` function. 
-Label enrichments were tested using Binomial with the `binom.test` 
-function, and T-tests used the `t.test` function. Principal component 
-analyses (PCA) used the `prcomp` function. Unless noted otherwise, 
-p-value adjustments used the Benjamini-Hotchberg method by setting 
-`method = "BH"` in the `p.adjust` function. Plots used either base 
-R, `ggplot2` (v.3.1.0), or `ComplexHeatmap` (v.1.99.5).
+Sample data were obtained, read, and analyzed programmatically using the R v4.0.0) and Python v3.7.0 languages in a CentOS 7 remote server environment. IDAT signals were read into `SummarizedExperiment` objects using the `minfi` package. Summary statistics were generated using base R functions. Statistical tests were performed using the `stats` v4.0.0) R package. Correlation tests used the Spearman method by setting `method = "spearman"` in the `cor.test` function. Analyses of variance (ANOVAs) were performed using the `anova` function. Label enrichments were tested using Binomial with the `binom.test` function, and T-tests used the `t.test` function. Principal component analyses (PCA) used the `prcomp` function. Unless noted otherwise, p-value adjustments used the Benjamini-Hotchberg method by setting `method = "BH"` in the `p.adjust` function. Plots used either base 
+R, `ggplot2` v3.1.0, or `ComplexHeatmap` v1.99.5.
 
 ## Autosomal DNAm principal component analyses (PCAs)
 
-Approximate array-wide PCA was performed using noob-normalized Beta-values from autosomal 
-probes and teh `prcomp` from the `stats` R package. We condensed autosomal DNAm across 
-35,360 samples into 1,000 hashed feature columns, then used this reduced representation 
-(1,000 rows X 35,360 columns) in cluster analysis. Feature hashing, or the 
-"hashing trick" (@weinberger_feature_2010), was used as an intermediate dimensionality 
-reduction step. The data files for each performed test are available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/. 
-
-To perform feature hashing, we used the following script in Python 3, where `target_dim=1000` 
-specifies the target hashed feature dimension:
-
-```
-def feature_hash(arr, target_dim=1000):
-    low_d_rep = [0 for _ in range(target_dim)]
-    for i, el in enumerate(arr):
-        hashed = mmh3.hash(str(i))
-        if hashed > 0:
-            low_d_rep[hashed % target_dim] += arr[i]
-        else:
-            low_d_rep[hashed % target_dim] -= arr[i]
-    return low_d_rep
-```
-
-## Predicted and mined ages concordances
-
-For mined and predicted ages, ANOVAs were used to calculate covariate 
-variance percentages, and p-values, for multivariate models of 
-predicted/epigenetic age consisting of chronological age, GSE ID, 
-cancer status, and predicted sample type. Predicted age and chronological 
-age were regressed to calculate R-squared values and correlated using 
-Spearman's test. These were plotted with the regression model using 
-`ggplot2` (Figure 1b). See example 1 in the `data_analyses` vignette of the 
-`recountmethylation` package for details.
+Approximate array-wide PCA was performed using noob-normalized Beta-values from autosomal probes and teh `prcomp` from the `stats` R package. We condensed autosomal DNAm across 35,360 samples into 1,000 hashed feature columns, the performed cluster analysis. As a dimensionality reduction step, feature hashing or the "hashing trick" mapped CpG probe data into a smaller intermediate dimension while approximately preserving between-sample variation [@weinberger_feature_2010]. Feature hashing as shown in the script `dnamhash.py`, and the hashed feature data is available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/. 
 
 # Works cited
