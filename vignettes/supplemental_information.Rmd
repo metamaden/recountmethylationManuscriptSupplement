@@ -23,19 +23,19 @@ bibliography: rm_refs.bib
 
 ```{r setup, echo = FALSE}
 suppressMessages(library(knitr))
-knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warning = FALSE, 
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, warning = FALSE,
   message = FALSE)
 ```
 
 # Overview
 
-This document contains supplemental information for the manuscript 
-  *Human methylome variation across Infinium 450K data on the Gene Expression Omnibus*, 
+This document contains supplemental information for the manuscript
+  *Human methylome variation across Infinium 450K data on the Gene Expression Omnibus*,
   including details about data access, aggregation, and analyses, with links to specific scripts where applicable.
 
 # Gene Expression Omnibus (GEO) data
 
-DNA methylation (DNAm) array samples were identified as published to the Gene Expression Omnibus (GEO) and available in the GEO Data Sets database as of March 31, 2019. 
+DNA methylation (DNAm) array samples were identified as published to the Gene Expression Omnibus (GEO) and available in the GEO Data Sets database as of March 31, 2019.
 
 ## GEO queries and data summaries
 
@@ -43,22 +43,22 @@ The Entrez Utilities software v10.9 was used to quantify DNAm array sample avail
 
 Samples and studies were identified for download using the script  https://github.com/metamaden/recount-methylation-server/blob/master/src/edirect_query.py.
 
-Data availability by year was determined using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/python/eqplot.py. 
+Data availability by year was determined using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/python/eqplot.py.
 
-Plots for figures 1A and S1 were generated using the scripts 
-https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/fig1a.R 
+Plots for figures 1A and S1 were generated using the scripts
+https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/fig1a.R
 and https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/figS1.R.
 
 ## Data acquisition
 
-We used the Python programming language to develop a download management system to handle and version file downloads from GEO. We used Celery v5.0.0 to handle job management and logging. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository. IDATs and SOFT files were acquired using the script 
+We used the Python programming language to develop a download management system to handle and version file downloads from GEO. We used Celery v5.0.0 to handle job management and logging. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository. IDATs and SOFT files were acquired using the script
 https://github.com/metamaden/recount-methylation-server/blob/master/src/dl.py and download jobs were managed using the script https://github.com/metamaden/recount-methylation-server/blob/master/src/server.py
 
 ## Processing DNAm data from IDATs
 
 Signals were read from sample IDATs into an R session using the `minfi` v1.29.3 R/Bioconductor
 package [@aryee_minfi:_2014]. DNAm assay data were read from IDATs using the script
-https://github.com/metamaden/rmpipeline/blob/master/R/rmpipeline.R. 
+https://github.com/metamaden/rmpipeline/blob/master/R/rmpipeline.R.
 
 # Sample metadata
 
@@ -70,9 +70,9 @@ After obtaining the GSE SOFT files from GEO, we extracted GSM-specific metadata 
 
 ## Processing the sample metadata
 
-The filtered JSON metadata were read into a list of tables, organized by GSE ID, using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/make_gse_annolist.R. We then preprocessed these tables by moving the available metadata under 
-common variables as shown in the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/metadata_preprocessing.R. This step was coordinated manually and 
-separately for each respective GSE ID. We additionally obtained GSM record titles from JSON files using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/get_gsm_titles.R. We postprocessed available metadata by mapping available data to controlled term vocabularies using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/metadata_preprocessing.R. Controlled vocabularies were heavily inspired by terms used by the Marmal-aid resource, and we attempted to map the most frequently available and informative metadata we observed in the original SOFT files. 
+The filtered JSON metadata were read into a list of tables, organized by GSE ID, using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/make_gse_annolist.R. We then preprocessed these tables by moving the available metadata under
+common variables as shown in the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/metadata_preprocessing.R. This step was coordinated manually and
+separately for each respective GSE ID. We additionally obtained GSM record titles from JSON files using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/get_gsm_titles.R. We postprocessed available metadata by mapping available data to controlled term vocabularies using the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/metadata_preprocessing.R. Controlled vocabularies were heavily inspired by terms used by the Marmal-aid resource, and we attempted to map the most frequently available and informative metadata we observed in the original SOFT files.
 
 ## Predicting sample types from filtered sample JSON files
 
@@ -92,8 +92,8 @@ We calculated quality signals for 17 BeadArray controls, methylated and unmethyl
 
 Sample data were obtained, read, and analyzed programmatically using the R v4.0.0 and Python v3.7.0 languages in a CentOS 7 remote server environment. IDAT signals were read into `SummarizedExperiment` objects using the `minfi` package. Summary statistics were generated using base R functions. Scripts to reproduce manuscript analyses are stored at https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/analyses. Statistical tests were performed using the `stats` v4.0.0 R package. Correlation tests used the Spearman method by setting `method = "spearman"` in the `cor.test` function. Analyses of variance (ANOVAs) were performed using the `anova` function. Label enrichments were tested using Binomial with the `binom.test` function, and T-tests used the `t.test` function. Unless noted otherwise, p-value adjustments used the Benjamini-Hotchberg method by setting `method = "BH"` in the `p.adjust` function. Plots used base R functions and the R packages `ggplot2` v3.1.0 and `ComplexHeatmap` v1.99.5. Scripts to reproduce manuscript figures are stored at https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/figures.
 
-## PCAs of autosomal DNAm 
+## PCAs of autosomal DNAm
 
-Approximate array-wide PCA was performed using noob-normalized Beta-values from autosomal probes and the `prcomp` from the `stats` R package. We condensed autosomal DNAm across 35,360 samples into 1,000 hashed feature columns, the performed cluster analysis. As a dimensionality reduction step, feature hashing or the "hashing trick" mapped CpG probe data into a smaller intermediate dimension while approximately preserving between-sample variation [@weinberger_feature_2010]. Feature hashing was performed as shown in the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/python/dnamhash.py. The hashed features data is available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/pca_fh1k_all_gsm35k.zip. 
+Approximate array-wide PCA was performed using noob-normalized Beta-values from autosomal probes and the `prcomp` from the `stats` R package. We condensed autosomal DNAm across 35,360 samples into 1,000 hashed feature columns, the performed cluster analysis. As a dimensionality reduction step, feature hashing or the "hashing trick" mapped CpG probe data into a smaller intermediate dimension while approximately preserving between-sample variation [@weinberger_feature_2010]. Feature hashing was performed as shown in the script https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/python/dnamhash.py. The hashed features data is available at https://recount.bio/data/recountmethylation_manuscript_supplement/data/pca_fh1k_all_gsm35k.zip.
 
 # Works cited
