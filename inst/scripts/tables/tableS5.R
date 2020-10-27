@@ -18,17 +18,17 @@ pkgname <- "recountmethylationManuscriptSupplement"
 tables.dir <- system.file("extdata", "tables", package = pkgname)
 fn <- "table-s2_qcmd-allgsm.csv"
 qcmd <- read.csv(file.path(tables.dir, fn))
-bam = qcmd[,grepl("^ba\\..*|^gsm$", colnames(qcmd))]
-colnames(bam) = gsub("ba\\.", "", colnames(bam))
+bam <- qcmd[,grepl("^ba\\..*|^gsm$", colnames(qcmd))]
+colnames(bam) <- gsub("ba\\.", "", colnames(bam))
 
 #------------------
 # get study metrics
 #------------------
 # study sizes
-gsev = unique(qcmd$gseid)
-gsesize = c()
-for(g in gsev){gsesize = c(gsesize, length(which(qcmd$gseid==g)))}
-st.agg = data.frame(gseid = gsev, ngsm = gsesize) # agg for supp table
+gsev <- unique(qcmd$gseid)
+gsesize <- c()
+for(g in gsev){gsesize <- c(gsesize, length(which(qcmd$gseid==g)))}
+st.agg <- data.frame(gseid = gsev, ngsm = gsesize) # agg for supp table
 
 # BA metrics, sub-threshold freq
 gm <- matrix(nrow = 0, ncol = 17)
@@ -92,11 +92,11 @@ for(g in 1:nrow(hm.baf)){
 
 # criterium ii, meth and unmeth signal
 hm.qcf <- st.agg[,20:25]
-thresh = 0.6
-qc.stf.gseanno = c()
-which.col = c(3, 4)
+thresh <- 0.6
+qc.stf.gseanno <- c()
+which.col <- c(3, 4)
 for(g in 1:nrow(hm.qcf)){
-  qc.stf.gseanno = c(qc.stf.gseanno,
+  qc.stf.gseanno <- c(qc.stf.gseanno,
                      ifelse(length(which(hm.qcf[g, which.col] > thresh)) == 2, 
                             "above", "below"))
 }
