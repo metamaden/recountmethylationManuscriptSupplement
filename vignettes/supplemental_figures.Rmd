@@ -91,12 +91,22 @@ the script `pca_fig3.R`. This script generates the files contained in
 generate the main plots.
 
 ```{r, eval = TRUE}
-script.name <- "figS6.R"
+script.name <- "figS6ac.R"
 source(file.path(scripts.dir, script.name))
+script.name <- "figS6bd.R"
+source(file.path(scripts.dir, script.name))
+```
+```{r, eval = TRUE}
 figS6a
 ```
 ```{r, eval = TRUE}
 figS6b
+```
+```{r, eval = TRUE}
+figS6c
+```
+```{r, eval = TRUE}
+figS6d
 ```
 
 # Figure S7
