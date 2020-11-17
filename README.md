@@ -29,7 +29,7 @@ list.files(doc.path)
 The following resources include data, code, and scripts to reproduce findings in the main manuscript.
 
 * `recountmethylation` -- Bioconductor package to access, query, and analyze full database 
-compilations and sample metadata. http://bioconductor.org/packages/devel/bioc/html/recountmethylation.html
+compilations and sample metadata. https://bioconductor.org/packages/release/bioc/html/recountmethylation.html
 
 * recountmethylationManuscriptSupplement -- GitHub repo for manuscript supplemental files, scripts, and data. https://github.com/metamaden/recountmethylationManuscriptSupplement
 
