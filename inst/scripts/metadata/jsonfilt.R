@@ -18,7 +18,7 @@ json.dn <- "gsm_json"
 readpath <- file.path("recount-methylation-files", json.dn)
 
 # output dir/path
-jfilt.dn <- json.dn # paste0(json.dn, "_filt")
+jfilt.dn <- paste0(json.dn, "_filt") # json.dn # paste0(json.dn, "_filt")
 destpath <- file.path("recount-methylation-files", jfilt.dn)
 if(!dir.exists(destpath)){dir.create(destpath)}
 
