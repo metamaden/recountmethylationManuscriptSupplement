@@ -43,7 +43,11 @@ dfplot$Metric = factor(dfplot$Metric, levels = dfi[,3][rev(order(dfi[,1]))])
 # make plot
 #----------
 fig2a <- ggplot(dfplot, aes(x = `Metric`, y = `Num. Samples`, fill = `Thresh. Count`)) +
-  geom_bar(stat = 'identity') + scale_fill_manual(values = c("limegreen", "red")) +
-  theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  geom_bar(stat = 'identity') + scale_fill_manual(values = c("blue", "goldenrod")) +
+  theme_bw() + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
   facet_zoom(ylim = c(0, 2500), zoom.data = ifelse(a <= 10, NA, FALSE)) +
   xlab("BeadArray Metric") + ylab("Number of\nSamples")
+
+pdf("fig2a_bpfacet_newthresh_bametric.pdf", 8, 2.5)
+print(fig2a); dev.off()
+
