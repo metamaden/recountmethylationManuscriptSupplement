@@ -37,6 +37,10 @@ colvals <- c("adipose" = "firebrick", "blood" = "red",
              "liver" = "forestgreen", "nasal" = "green")
 pca.dat$tissue <- dfid$tissue
 
+num.samp <- nrow(pca.dat)
+plot.title<-paste0("Filtered non-cancer tissues\nno sperm (",
+                   num.samp," samples)")
+
 #-----------------
 # make scatterplot
 #-----------------
@@ -45,3 +49,24 @@ fig3d <- ggplot(pca.dat, aes(x = PC1, y = PC2, color = tissue)) +
   scale_color_manual(values = colvals) +
   xlab(cname12[1]) + ylab(cname12[2]) +
   theme(legend.position = "none")
+
+#---------------------
+# make manuscript plot
+#---------------------
+# font sizes
+fs.axis.text <- fs.legend.text <- 12
+fs.axis.title <- fs.legend.title <- 15
+
+fig3d <- ggplot(pca.dat, aes(x = PC1, y = PC2, color = tissue)) +
+  geom_point(alpha = 0.4) + theme_bw() + scale_color_manual(values = colvals) +
+  ggtitle("Filtered non-cancer tissues\nexcluding sperm (7,254 samples)") +
+  xlab(cname12[1]) + ylab(cname12[2]) + labs(color = "Type") +
+  theme(axis.text = element_text(size = fs.axis.text),
+        legend.text = element_text(size = fs.legend.text),
+        axis.title = element_text(size = fs.axis.title),
+        legend.title = element_text(size = fs.legend.title),
+        plot.title = element_text(size = fs.axis.title))
+
+# print for manuscript
+#pdf("fig3d_pca-fh1k_nct6.pdf", 4.5, 3.5)
+#print(fig3d);dev.off()
