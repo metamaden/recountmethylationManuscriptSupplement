@@ -61,17 +61,24 @@ df.gsm$fillcol <- c("red", "purple", "gold", "forestgreen",
 df.gsm <- df.gsm[order(df.gsm$num.gsm),]
 
 # make plot objects
-figS7b.studies <- ggplot(df.gse, aes(x = tissue, y = num.gse, fill = tissue)) + 
+figS7b.studies <- ggplot(df.gse, aes(x = tissue, 
+                                     y = num.gse, fill = tissue)) + 
   geom_bar(stat = "identity") + theme_bw() + 
-  theme(legend.position = "none", axis.text.x = element_text(angle = 90)) +
-  scale_fill_manual(values = df.gse$fillcol) + geom_text(aes(label=num.gse), vjust = -0.2) +
-  ylab("Sample Count") + xlab("Tissue") + ylim(0, 6200)
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = df.gse$fillcol) + 
+  geom_text(aes(label=num.gse), vjust = -0.2) +
+  ylab("Study count") + xlab("Tissue") + ylim(0, 6200)
 
-figS7b.samples <- ggplot(df.gsm, aes(x = tissue, y = num.gsm, fill = tissue)) + 
+figS7b.samples <- ggplot(df.gsm, aes(x = tissue, 
+                                     y = num.gsm, fill = tissue)) + 
   geom_bar(stat = "identity") + theme_bw() + 
-  theme(legend.position = "none", axis.text.x = element_text(angle = 90)) +
-  scale_fill_manual(values = df.gsm$fillcol) + geom_text(aes(label=num.gsm), vjust = -0.2) +
-  ylab("Sample Count") + xlab("Tissue") + ylim(0, 6200)
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 90, 
+                                   vjust = 0.1, hjust = 1)) +
+  scale_fill_manual(values = df.gsm$fillcol) + 
+  geom_text(aes(label=num.gsm), vjust = -0.2) +
+  ylab("Sample count") + xlab("Tissue") + ylim(0, 6800)
 
 #-----------------------------------------
 # figS7c -- anova filter, stacked barplots
@@ -79,10 +86,25 @@ figS7b.samples <- ggplot(df.gsm, aes(x = tissue, y = num.gsm, fill = tissue)) +
 # order on removed
 bff <- bpdf.anovafilt[bpdf.anovafilt$type == "REMOVED",]
 lvl.order <- bff$tissue[order(bff[,1])]
-bpdf.anovafilt$tissue <- factor(bpdf.anovafilt$tissue, levels = lvl.order)
+bpdf.anovafilt$tissue <- factor(bpdf.anovafilt$tissue, 
+                                levels = lvl.order)
 
 # get plot object
-figS7c <- ggplot(bpdf.anovafilt, aes(x = tissue, y = nprobes, fill = type)) +
-  geom_bar(stat = "identity") + theme_bw() +
-  theme(axis.text.x = element_text(angle = 90)) +
-  labs(y = "Probe Count", x = "Tissue", fill = "Probe Type")
+figS7c <- ggplot(bpdf.anovafilt, aes(x = tissue, 
+                                     y = nprobes, 
+                                     fill = type)) +
+  geom_bar(stat = "identity", colour = "black") + 
+  theme_bw() + labs(y = "Probe count", x = "Tissue", 
+                    fill = "Probe type") +
+  theme(axis.text.x = element_text(angle = 90, 
+                                   hjust = 1, vjust = 0.5))
+
+#-------------------------
+# print manuscript figures
+#-------------------------
+# print manuscript figures
+# pdf("sfig7b_bp-samplecount-nct7.pdf", 2.8, 2.3)
+# print(figS7b.samples); dev.off()
+
+# pdf("sfig7c_bp-cg-anovafilt_nct7.pdf", 3.4, 2.4)
+# print(figS7c); dev.off()

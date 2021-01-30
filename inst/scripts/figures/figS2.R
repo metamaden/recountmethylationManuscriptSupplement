@@ -35,11 +35,14 @@ for(i in seq(0, 1, 0.1)){
 bpdf <- as.data.frame(bpdf, stringsAsFactors = FALSE)
 bpdf[,2] <- as.numeric(bpdf[,2])
 bpdf[,3] <- as.numeric(bpdf[,3])
-colnames(bpdf) <- c("Sample Type", "num.gsm", "min.confidence")
+colnames(bpdf) <- c("Sample type", "num.gsm", "min.confidence")
 
 #----------------
 # get plot object
 #----------------
-figS2 <- ggplot(bpdf, aes(x = min.confidence, y = num.gsm, fill = `Sample Type`)) + 
-  geom_bar(stat = "identity") + theme_bw() + xlab("Minimum Confidence") +
-  ylab("Number of Samples")
+figS2 <- ggplot(bpdf, aes(x = min.confidence, y = num.gsm, fill = `Sample type`)) + 
+  geom_bar(stat = "identity") + theme_bw() + xlab("Minimum confidence") +
+  ylab("Number of samples") + scale_x_continuous(breaks = seq(0, 1, 0.1))
+
+#pdf("sfig2_bp_stconfcut_msrapst.pdf", 6, 2.2)
+#print(figS2);dev.off()

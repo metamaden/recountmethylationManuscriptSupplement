@@ -100,8 +100,14 @@ colvect <- c("blue", "red", "green", "purple", "brown", "grey", "pink",
              "darkslategray4", "deeppink", "gray48", "aquamarine", "cadetblue", 
              "chocolate")
 
+#----------
+# make plot
+#----------
 figS4 <- ggplot(bplot, aes(x = component, y = ssq, fill = Variable)) +
   geom_bar(stat = "identity") + scale_fill_manual(values = colvect) + 
-  theme_bw() + ylab("Sum of Squared Variances") + xlab("Component") +
+  theme_bw() + ylab("Sum of squared variances") + xlab("Component") +
   theme(text = element_text(size=20), 
         axis.text.x = element_text(angle = 90))
+
+#pdf("sfig4_bapca-binnum-thresh.pdf", 8.5, 6)
+#print(figS4); dev.off()

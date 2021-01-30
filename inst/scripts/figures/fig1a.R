@@ -134,10 +134,10 @@ fig1a.lform <- ggplot(dff, aes(x = year, y = samples)) + theme_bw() +
 fig1a.legend <- ggpubr::get_legend(fig1a.lform)
 
 # print manuscript plot
-pdf("fig1a_geo-gsm-yr.pdf", 4.8, 2.8)
-print(cowplot::ggdraw(fig1a) + 
-        cowplot::draw_plot(fig1a.legend, .2, .35, .5, .5))
-dev.off()
+#pdf("fig1a_geo-gsm-yr.pdf", 4.8, 2.8)
+#print(cowplot::ggdraw(fig1a) + 
+#        cowplot::draw_plot(fig1a.legend, .2, .35, .5, .5))
+#dev.off()
 
 # make vignette plot
 dff$`Platform (Type)` <- dff$plab

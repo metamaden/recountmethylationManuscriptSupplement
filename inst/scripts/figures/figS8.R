@@ -5,9 +5,7 @@
 # low variance and mean DNAm differences/ranges across
 # 7 noncancer tissues (figS8).
 
-library(ggplot2)
-library(gridExtra)
-library(minfiData)
+library(ggplot2); library(gridExtra); library(minfiData)
 
 #----------
 # load data
@@ -60,59 +58,73 @@ cga$gene.relation = ifelse(cga$UCSC_RefGene_Name=="", "intergenic",
 #---------------------------
 # get region barplot objects
 #---------------------------
-cgaf <- cga[cga$Name %in% cgid$cgid,]
-mainplotwidth = 8; mainplotheight = 8
+cgaf <- cga[cga$Name %in% cgid$cgid,]; mainplotwidth = 8; mainplotheight = 8
 theme.size = 20
 
 # plot 1 -- island/gene region
 bpdf <- as.data.frame(table(cgaf$annocat), stringsAsFactors = FALSE)
-colnames(bpdf) = c("Genome\nRegion", "Count")
-bpdf[,1] <- ifelse(bpdf[,1] == "interisland_intergenic", "opensea\n",
-                   ifelse(bpdf[,1] == "interisland_intragenic", "opensea;\nintragenic",
-                          ifelse(bpdf[,1] == "intraisland_intergenic", "island\n",
-                                 "island;\nintragenic")))
+colnames(bpdf) = c("Genome\nregion", "Count"); bpdf$label <- bpdf[,1]
+# get compact label from region var
+bpdf[bpdf$label == "interisland_intergenic",]$label <- "Open sea,\nintergenic"
+bpdf[bpdf$label == "interisland_intragenic",]$label <- "Open sea,\nintragenic"
+bpdf[bpdf$label == "intraisland_intergenic",]$label <- "CpG island,\nintergenic"
+bpdf[bpdf$label == "intraisland_intragenic",]$label <- "CpG island,\nintragenic"
 
-figS8.plot1 <- ggplot(bpdf, aes(x = "", y = Count, fill = `Genome\nRegion`)) +
-  geom_bar(stat = "identity") + theme_bw(base_size = theme.size) +
+figS8.plot1 <- ggplot(bpdf, aes(x = "", y = Count, 
+                                fill = label)) +
+  geom_bar(stat = "identity", colour = "black") + 
+  theme_bw(base_size = theme.size) +
   theme(axis.text.x = element_text(angle = 90), 
-        legend.position = "top") + 
-  xlab("") + ylab("Number of Probes") +
-  guides(fill = guide_legend(nrow = 2, byrow = TRUE))
+        legend.position = "top") + xlab("") + ylab("Number of probes") +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE)) +
+  labs(fill = "Genome\nregion")
 
 # plot 2 -- gene region
 bpdf <- matrix(nrow = 0, ncol = 2)
 bpdf <- as.data.frame(table(cgaf$gene.relation),
-                     stringsAsFactors = FALSE)
-bpdf[,1] <- ifelse(bpdf[,1] == "body", "body\n",
-                   ifelse(bpdf[,1] == "intergenic", "intergenic\n",
-                          ifelse(bpdf[,1] == "promoter", "promoter\n",
-                                 "promoter;\nbody")))
-colnames(bpdf) <- c("Gene\nRegion", "Count")
-figS8.plot2 <- ggplot(bpdf, aes(x = "", y = Count, fill = `Gene\nRegion`)) +
-  geom_bar(stat = "identity") + theme_bw(base_size = theme.size) +
+                     stringsAsFactors = FALSE);bpdf$label <- bpdf[,1]
+
+bpdf[bpdf$label == "promoter;body",]$label <- "Promoter and\nbody"
+bpdf[bpdf$label == "body",]$label <- "Body only\n "
+bpdf[bpdf$label == "promoter",]$label <- "Promoter\nonly"
+bpdf[bpdf$label == "intergenic",]$label <- "Intergenic\n "
+colnames(bpdf) <- c("Gene\nregion", "Count", "label")
+
+figS8.plot2 <- ggplot(bpdf, aes(x = "", y = Count, 
+                                fill = label)) +
+  geom_bar(stat = "identity", colour = "black") + 
+  theme_bw(base_size = theme.size) +
   theme(axis.text.x = element_text(angle = 90), 
         legend.position = "top") + 
-  xlab("") + ylab("") +
+  xlab("") + ylab("") + labs(fill = "Gene\nregion") +
   guides(fill = guide_legend(nrow=2, byrow=TRUE))
+  
 
 # plot 3 -- island region
 bpdf <- matrix(nrow = 0, ncol = 2)
-cgaf$isl.bin <- ifelse(grepl("Shore", cgaf$Relation_to_Island), "shore\n",
-                       ifelse(grepl("Shelf", cgaf$Relation_to_Island), "shelf\n",
-                              paste0(tolower(cgaf$Relation_to_Island), "\n")))
+cgaf$isl.bin <- ifelse(grepl("Shore", cgaf$Relation_to_Island), "shore",
+                       ifelse(grepl("Shelf", cgaf$Relation_to_Island), "shelf",
+                              paste0(tolower(cgaf$Relation_to_Island), "")))
 bpdf <- as.data.frame(table(cgaf$isl.bin), stringsAsFactors = FALSE)
-colnames(bpdf) <- c("Island\nRegion", "Count")
-figS8.plot3 <- ggplot(bpdf, aes(x = "", y = Count, fill = `Island\nRegion`)) +
-  geom_bar(stat = "identity") + theme_bw(base_size = theme.size) +
+bpdf$label <- bpdf[,1];bpdf[bpdf$label == "island",]$label <- "CpG island\n"
+bpdf[bpdf$label == "opensea",]$label <- "Open sea\n"
+bpdf[bpdf$label == "shelf",]$label <- "CpG island\nshelf"
+bpdf[bpdf$label == "shore",]$label <- "CpG island\nshore"
+colnames(bpdf) <- c("Island\nregion", "Count", "label")
+
+figS8.plot3 <- ggplot(bpdf, aes(x = "", y = Count, 
+                                fill = label)) +
+  geom_bar(stat = "identity", colour = "black") + 
+  theme_bw(base_size = theme.size) +
   theme(axis.text.x = element_text(angle = 90), 
         legend.position = "top") + 
-  xlab("") + ylab("") +
+  xlab("") + ylab("") + labs(fill = "Island\nregion") +
   guides(fill = guide_legend(nrow=2,byrow=TRUE))
-
+  
 #-------------------------------
 # make horizontal composite plot
 #-------------------------------
-#bpstack.name <- "bp-region_lowvar_nct7.pdf"
-#pdf(bpstack.name, 15, 5.5)
-#grid.arrange(figS8.plot1, figS8.plot2, figS8.plot3, ncol = 3)
+#bpstack.name <- "sfig8_bp-region_lowvar_nct7.pdf"
+#pdf(bpstack.name, 16, 5.5)
+print(grid.arrange(figS8.plot1, figS8.plot2, figS8.plot3, ncol = 3))
 #dev.off()
