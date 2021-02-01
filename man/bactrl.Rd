@@ -23,7 +23,32 @@ column names are addresses, rownames are samples/GSM IDs).}
 Matrix of BeadArray signal values
 }
 \description{
-This resource takes guidance from 3 key sources: the Illumina GenomeStudio Methylation
+This resource takes guidance from 3 key sources: the Illumina GenomeStudio Methylation 
+Module (v1.8, source 1), the BeadArray Controls Reporter Software Guide (v00, source 2), 
+and the ewastools resource (v1.5, source 3). Notes on how function relates to these sources 
+follows:
+}
+\details{
+1. Use C and U 1-3 and 4-6 for Bisulfite Conversion I per source 2, 
+ source 3 only uses 1-2/4-5, and may have string matching error.
+
+2. Use probe address "34648333" and "43603326" (DNP, Biotin subtype) for Biotin Staining 
+ Background where appropriate, per sources 2 and 3.
+
+3. To offset many Inf/-Inf values due to 0 background signal, set a special Biotin
+ specific baseline offset (default: 1) in denom of Biotin red/grn Bkg value. 
+ No offset specified in source 2.
+
+4. For Specificity I, use PM, MM 1-3 for grn, 4-6 for red (per source 3, source 2 ambiguous)
+
+5. For Specificity II, use just probes S1-3, as probe S4 unavailable in control probe 
+ annotation (per source 2, corroborated in source 3).
+
+6. Note definition for background is ambiguous (can be either Red or Grn channel, from extension),
+ per source 2; source 3 uses extension Grn A/T probes for system background.
+
+7. Note additional source 2 metrics using background (e.g. specificity background/U1-3) not 
+ calculated here (yet).
 }
 \seealso{
 bathresh
