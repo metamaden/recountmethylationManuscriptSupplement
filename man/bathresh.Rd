@@ -10,9 +10,9 @@ bathresh(rm, pass.lab = "PASS", fail.lab = "FAIL")
 \item{rm}{BeadArray signals returned by `bactrl()` 
 (matrix, rows = samples, cols = metrics).}
 
-\item{pass.lab}{Label for passing samples (character, "PASS").}
+\item{pass.lab}{Label for passing samples ("PASS", chracter).}
 
-\item{fail.lab}{Label for failing samples (character, "FAIL").}
+\item{fail.lab}{Label for failing samples ("FAIL", chracter).}
 }
 \value{
 Matrix of threshold assessments, either 'FAIL' or 'PASS', 
@@ -25,5 +25,5 @@ minimum signal thresholds from the BeadArray Controls Reporter
 Software Guide ewastools.
 }
 \seealso{
-bathresh
+bactrl
 }

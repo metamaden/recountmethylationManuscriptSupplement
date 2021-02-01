@@ -4,7 +4,7 @@
 \alias{bactrl}
 \title{Get control probe metrics from matrices of red/grn signal}
 \usage{
-bactrl(rs, gs, cdf, baseline = 3000, biotin.baseline = 1)
+bactrl(rs, gs, cdf, baseline = 3000, biotin.baseline = 1, verbose = TRUE)
 }
 \arguments{
 \item{rs}{Red signal data (data.frame, columns are probes, rows are samples, 
@@ -18,6 +18,8 @@ column names are addresses, rownames are samples/GSM IDs).}
 \item{baseline}{Baseline measure for signals (integer, 3000).}
 
 \item{biotin.baseline}{Baseline to use for biotin controls (integer, 1).}
+
+\item{verbose}{Whether to show status messages (TRUE, boolean).}
 }
 \value{
 Matrix of BeadArray signal values
