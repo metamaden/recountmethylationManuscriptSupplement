@@ -62,9 +62,8 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   if(verbose){message("Calculating Restore metric...")}
   ct <- "RESTORATION"; ci <- cdf[cdf$Type == ct,]
   which.rest <- which(colnames(gs) %in% ci$Address)
-  m1 <- apply(gs, 1, function(x){
-    x[which.rest]/(max(x[addr.bkg]) + baseline)
-  });mi <- 1; rm <- cbind(rm, m1); colnames(rm)[ncol(rm)] = cnl[mi]
+  m1 <- apply(gs, 1, function(x){x[which.rest]/(max(x[addr.bkg]) + baseline)})
+  mi <- 1; rm <- cbind(rm, m1); colnames(rm)[ncol(rm)] = cnl[mi]
   
   # BIOTIN STAINING
   # 2 metrics, 1 per chan
@@ -135,7 +134,7 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   
   # HYBRIDIZATION
   # 2 metrics, 1 per channel
-  if(verbose){message("Calculating hybridization metrics...")}
+  if(verbose){message("Calculating Hybridization metrics...")}
   ct <- "HYBRIDIZATION"; ci <- cdf[cdf$Type == ct,]
   which.hi <- which(colnames(gs) %in% ci$Address[grepl("(High)", ci$ExtendedType)])
   which.med <- which(colnames(gs) %in% ci$Address[grepl("(Medium)", ci$ExtendedType)])
@@ -147,7 +146,7 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   
   # TARGET REMOVAL
   # 2 metrics, both from grn channel
-  if(verbose){message("Calculating target removal metrics...")}
+  if(verbose){message("Calculating Target Removal metrics...")}
   ct <- "EXTENSION"; ci <- cdf[cdf$Type == ct,]
   which.bkg <- which(colnames(gs) %in% 
                        ci[grepl("(A)|(T)", ci$ExtendedType), ]$Address)
@@ -165,7 +164,7 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   
   # BISULFITE CONVERSION I
   # 2 metrics, 1 per channel
-  if(verbose){message("Calculating bisulfite conversion I metrics...")}
+  if(verbose){message("Calculating Bisulfite Conversion I metrics...")}
   ct <- "BISULFITE CONVERSION I"; ci <- cdf[cdf$Type == ct,]
   which.c123 <- which(colnames(gs) %in% ci$Address[grepl("C1|C2|C3", ci$ExtendedType)])
   which.u123 <- which(colnames(gs) %in% ci$Address[grepl("U1|U2|U3", ci$ExtendedType)])
@@ -180,7 +179,7 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   
   # BISULFITE CONVERSION II
   # 2 metrics, 1 per channel
-  if(verbose){message("Calculating bisulfite conversion II metric...")}
+  if(verbose){message("Calculating Bisulfite Conversion II metric...")}
   ct <- "BISULFITE CONVERSION II"; ci <- cdf[cdf$Type == ct,]
   which.ci.red <- which(colnames(rs) %in% ci$Address)
   which.ci.grn <- which(colnames(gs) %in% ci$Address)
@@ -190,7 +189,7 @@ bactrl <- function(rs, gs, cdf, baseline = 3000, biotin.baseline = 1,
   
   # NON-POLYMORPHIC
   # 2 metrics, 1 per channel
-  if(verbose){message("Calculating non-polymorphic metrics...")}
+  if(verbose){message("Calculating Non-polymorphic metrics...")}
   ct <- "NON-POLYMORPHIC"; ci <- cdf[cdf$Type == ct,]
   # red
   which.cg <- which(colnames(rs) %in% ci$Address[grepl("(C)|(G)", ci$ExtendedType)])
