@@ -3,6 +3,7 @@
 # Make plot of epigenetic vs. mined ages, for panel Fig 1b.
 
 library(recountmethylation)
+library(ggplot2)
 
 #----------
 # load data
@@ -45,7 +46,7 @@ mdff <- mdf[filt, ]
 fig1b <- ggplot(mdff, aes(x = chron.age, y = predage)) +
   geom_point(size = 1.2, alpha = 0.2) + 
   geom_smooth(method = "lm", size = 1.2) +
-  theme_bw() + xlab("Mined chronological age") + 
+  theme_bw() + xlab("Chronological age") + 
   ylab("Epigenetic age")
 
 #pdf("fig1b_chron-vs-epigen-age.pdf", 2.7, 2.5)
