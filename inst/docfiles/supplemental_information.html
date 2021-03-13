@@ -1482,6 +1482,54 @@ window.onload = function() {
   PagedTableDoc.initAll();
 };
 </script>
+<style type="text/css">
+a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
+a.anchor-section::before {content: '#';}
+.hasAnchor:hover a.anchor-section {visibility: visible;}
+</style>
+<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
+document.addEventListener('DOMContentLoaded', function() {
+  // Do nothing if AnchorJS is used
+  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
+    return;
+  }
+
+  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  // Do nothing if sections are already anchored
+  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
+    return null;
+  }
+
+  // Use section id when pandoc runs with --section-divs
+  const section_id = function(x) {
+    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
+            ? x.id : '');
+  };
+
+  // Add anchors
+  h.forEach(function(x) {
+    const id = x.id || section_id(x.parentElement);
+    if (id === '') {
+      return null;
+    }
+    let anchor = document.createElement('a');
+    anchor.href = '#' + id;
+    anchor.classList = ['anchor-section'];
+    x.classList.add('hasAnchor');
+    x.appendChild(anchor);
+  });
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -1677,22 +1725,22 @@ summary {
 <div id="geo-queries-and-data-summaries" class="section level2">
 <h2>GEO queries and data summaries</h2>
 <p>The Entrez Utilities software v10.9 was used to quantify DNAm array sample availability by year and platform for 3 major Illumina BeadArray platforms (HM450K, HM27K, and EPIC/HM850K).</p>
-<p>Samples and studies were identified for download using the script <a href="https://github.com/metamaden/recount-methylation-server/blob/master/src/edirect_query.py" class="uri">https://github.com/metamaden/recount-methylation-server/blob/master/src/edirect_query.py</a>.</p>
+<p>Samples and studies were identified for download using the script <a href="https://github.com/metamaden/recountmethylation_server/blob/master/src/edirect_query.py" class="uri">https://github.com/metamaden/recountmethylation_server/blob/master/src/edirect_query.py</a>.</p>
 <p>Data availability by year was determined using the script <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/python/eqplot.py" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/python/eqplot.py</a>.</p>
 <p>Plots for figures 1A and S1 were generated using the scripts <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/fig1a.R" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/fig1a.R</a> and <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/figS1.R" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/blob/main/inst/scripts/figures/figS1.R</a>.</p>
 </div>
 <div id="data-acquisition" class="section level2">
 <h2>Data acquisition</h2>
-<p>We used the Python programming language to develop a download management system to handle and version file downloads from GEO. We used Celery v5.0.0 to handle job management and logging. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository. IDATs and SOFT files were acquired using the script <a href="https://github.com/metamaden/recount-methylation-server/blob/master/src/dl.py" class="uri">https://github.com/metamaden/recount-methylation-server/blob/master/src/dl.py</a> and download jobs were managed using the script <a href="https://github.com/metamaden/recount-methylation-server/blob/master/src/server.py" class="uri">https://github.com/metamaden/recount-methylation-server/blob/master/src/server.py</a></p>
+<p>We used the Python v3.7.0 programming language to develop a download management system to handle and version file downloads from GEO. We used Celery v5.0.0 to handle job management and logging. We used this job management system to obtain GSM IDATs, GSE SOFT files, and other data using batch queries to the GEO Data Sets repository. IDATs and SOFT files were acquired using the script <a href="https://github.com/metamaden/recountmethylation_server/blob/master/src/dl.py" class="uri">https://github.com/metamaden/recountmethylation_server/blob/master/src/dl.py</a> and download jobs were managed using the script <a href="https://github.com/metamaden/recountmethylation_server/blob/master/src/server.py" class="uri">https://github.com/metamaden/recountmethylation_server/blob/master/src/server.py</a></p>
 </div>
 <div id="processing-dnam-data-from-idats" class="section level2">
 <h2>Processing DNAm data from IDATs</h2>
-<p>Signals were read from sample IDATs into an R session using the <code>minfi</code> v1.29.3 R/Bioconductor package <span class="citation">(Aryee et al. 2014)</span>. DNAm assay data were read from IDATs using the script <a href="https://github.com/metamaden/rmpipeline/blob/master/R/rmpipeline.R" class="uri">https://github.com/metamaden/rmpipeline/blob/master/R/rmpipeline.R</a>.</p>
+<p>Signals were read from sample IDATs into an R session using the <code>minfi</code> v1.29.3 R/Bioconductor package <span class="citation">(Aryee et al. 2014)</span>. DNAm assay data were read from IDATs using the script functions from the script <a href="https://github.com/metamaden/recountmethylation.pipeline/blob/master/R/rmpipeline.R" class="uri">https://github.com/metamaden/recountmethylation.pipeline/blob/master/R/rmpipeline.R</a>.</p>
 </div>
 </div>
 <div id="sample-metadata" class="section level1">
 <h1>Sample metadata</h1>
-<p>Scripts for metadata processing can be found in the directory <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata</a></p>
+<p>Scripts for metadata processing can be found in the directory <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata</a>.</p>
 <div id="extracting-samplegsm-metadata-from-gse-soft-files-in-json-format" class="section level2">
 <h2>Extracting sample/GSM metadata from GSE SOFT files in JSON format</h2>
 <p>After obtaining the GSE SOFT files from GEO, we extracted GSM-specific metadata as JSON-formatted files using the script <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/soft2json.R" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/soft2json.R</a>. Before further processing, we filtered the sample JSON-formatted metadata using the script <a href="https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/jsonfilt.R" class="uri">https://github.com/metamaden/recountmethylationManuscriptSupplement/tree/main/inst/scripts/metadata/jsonfilt.R</a>. This step attempted to remove any GSE-specific metadata while retaining sample-identifying characteristics.</p>
@@ -1764,7 +1812,7 @@ summary {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

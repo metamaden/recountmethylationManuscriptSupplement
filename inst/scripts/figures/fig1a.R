@@ -38,7 +38,7 @@ colnames(df) <- c("platformid","year","samples")
 which.platforms <- c("GPL8490", "GPL13534", "GPL21145")
 df <- df[df$platformid %in% which.platforms,]
 # append sample types
-stype <- c(rep(" (all)", 60), rep(" (idat)", 60))
+stype <- c(rep(" (all)", 60), rep(" (IDAT)", 60))
 df$plab <- paste0(df$platformid, stype)
 # get formatted columns/labels
 df$year <- as.numeric(df$year); df$pname <- "NA"
@@ -68,23 +68,23 @@ dff$platform <- gsub(" .*", "", dff$pname)
 #------------
 # make manuscript plot
 dff$`Platform (Type)` <- dff$plab
-lv <- c("HM450K (all)", "HM450K (idat)", "EPIC (all)", "EPIC (idat)", "HM27K (all)", "HM27K (idat)")
-vv <- c("green", "forestgreen", "blue", "cyan", "gold", "brown")
+lv <- c("HM450K (all)", "HM450K (IDAT)", "EPIC (all)", "EPIC (IDAT)", "HM27K (all)", "HM27K (IDAT)")
+vv <- c("green", "forestgreen", "blue", "cyan", "brown", "gold")
 sv <- c(17, 17, 16, 16, 18, 18)
 lname <- "" # "Platform (Type)"
 lsize <- 1; ptsize <- 4.5
 yearv <- c(2009,2010,2011,2012,2013,2014,2015,2016,2017,2018)
 
-vv2 <- c("HM27K (all)" = "brown", "HM27K (idat)" = "gold",
-         "HM450K (all)" = "green", "HM450K (idat)" = "forestgreen",
-         "EPIC (all)" = "cyan", "EPIC (idat)" = "blue")
-sv2 <- c("HM27K (all)" = 18, "HM27K (idat)" = 18,
-         "HM450K (all)" = 16, "HM450K (idat)" = 16,
-         "EPIC (all)" = 17, "EPIC (idat)" = 17)
+vv2 <- c("HM27K (all)" = "gold", "HM27K (IDAT)" = "brown",
+         "HM450K (all)" = "green", "HM450K (IDAT)" = "forestgreen",
+         "EPIC (all)" = "cyan", "EPIC (IDAT)" = "blue")
+sv2 <- c("HM27K (all)" = 18, "HM27K (IDAT)" = 18,
+         "HM450K (all)" = 16, "HM450K (IDAT)" = 16,
+         "EPIC (all)" = 17, "EPIC (IDAT)" = 17)
 
-dff$pname <- factor(dff$pname, levels = c("HM27K (all)","HM27K (idat)",
-                                          "HM450K (all)", "HM450K (idat)",
-                                          "EPIC (all)", "EPIC (idat)"))
+dff$pname <- factor(dff$pname, levels = c("HM27K (all)","HM27K (IDAT)",
+                                          "HM450K (all)", "HM450K (IDAT)",
+                                          "EPIC (all)", "EPIC (IDAT)"))
 dff$color <- dff$shape <- "NA"
 for(x in names(vv2)){
   dff[dff$pname == x,]$color <- vv2[x];dff[dff$pname == x,]$shape <- sv2[x]}
@@ -92,28 +92,28 @@ for(x in names(vv2)){
 fig1a <- ggplot(dff, aes(x = year, y = samples)) + theme_bw() +
   xlab("Year") + ylab("Cumulative samples") + xlim(2009, 2018) +
   geom_line(data = dff[dff$pname == "HM27K (all)",], 
-            aes(year, samples), color = "brown", size = lsize) +
-  geom_point(data = dff[dff$pname == "HM27K (all)",], aes(year, samples), 
-             color = "brown", size = ptsize, shape = 18) +
-  geom_line(data = dff[dff$pname == "HM27K (idat)",], 
             aes(year, samples), color = "gold", size = lsize) +
-  geom_point(data = dff[dff$pname == "HM27K (idat)",], aes(year, samples), 
+  geom_point(data = dff[dff$pname == "HM27K (all)",], aes(year, samples), 
              color = "gold", size = ptsize, shape = 18) +
+  geom_line(data = dff[dff$pname == "HM27K (IDAT)",], 
+            aes(year, samples), color = "brown", size = lsize) +
+  geom_point(data = dff[dff$pname == "HM27K (IDAT)",], aes(year, samples), 
+             color = "brown", size = ptsize, shape = 18) +
   geom_line(data = dff[dff$pname == "HM450K (all)",], 
             aes(year, samples), color = "green", size = lsize) +
   geom_point(data = dff[dff$pname == "HM450K (all)",], aes(year, samples), 
              color = "green", size = ptsize, shape = 16) +
-  geom_line(data = dff[dff$pname == "HM450K (idat)",], 
+  geom_line(data = dff[dff$pname == "HM450K (IDAT)",], 
             aes(year, samples), color = "forestgreen", size = lsize) +
-  geom_point(data = dff[dff$pname == "HM450K (idat)",], aes(year, samples), 
+  geom_point(data = dff[dff$pname == "HM450K (IDAT)",], aes(year, samples), 
              color = "forestgreen", size = ptsize, shape = 16) +
   geom_line(data = dff[dff$pname == "EPIC (all)",], 
             aes(year, samples), color = "cyan", size = lsize) +
   geom_point(data = dff[dff$pname == "EPIC (all)",], aes(year, samples), 
              color = "cyan", size = ptsize, shape = 17) +
-  geom_line(data = dff[dff$pname == "EPIC (idat)",], 
+  geom_line(data = dff[dff$pname == "EPIC (IDAT)",], 
             aes(year, samples), color = "blue", size = lsize) +
-  geom_point(data = dff[dff$pname == "EPIC (idat)",], aes(year, samples), 
+  geom_point(data = dff[dff$pname == "EPIC (IDAT)",], aes(year, samples), 
              color = "blue", size = ptsize, shape = 17) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 90)) +
   scale_x_continuous(labels = yearv,
@@ -134,10 +134,10 @@ fig1a.lform <- ggplot(dff, aes(x = year, y = samples)) + theme_bw() +
 fig1a.legend <- ggpubr::get_legend(fig1a.lform)
 
 # print manuscript plot
-#pdf("fig1a_geo-gsm-yr.pdf", 4.8, 2.8)
-#print(cowplot::ggdraw(fig1a) + 
+# pdf("fig1a_geo-gsm-yr.pdf", 4.8, 2.8)
+# print(cowplot::ggdraw(fig1a) + 
 #        cowplot::draw_plot(fig1a.legend, .2, .35, .5, .5))
-#dev.off()
+# dev.off()
 
 # make vignette plot
 dff$`Platform (Type)` <- dff$plab

@@ -46,8 +46,8 @@ mdff <- mdf[filt, ]
 fig1b <- ggplot(mdff, aes(x = chron.age, y = predage)) +
   geom_point(size = 1.2, alpha = 0.2) + 
   geom_smooth(method = "lm", size = 1.2) +
-  theme_bw() + xlab("Chronological age") + 
-  ylab("Epigenetic age")
+  theme_bw() + xlab("Chronological age (years)") + 
+  ylab("Epigenetic age (years)")
 
-#pdf("fig1b_chron-vs-epigen-age.pdf", 2.7, 2.5)
-#print(fig1b); dev.off()
+# pdf("fig1b_chron-vs-epigen-age.pdf", 2.7, 2.5)
+# print(fig1b); dev.off()
